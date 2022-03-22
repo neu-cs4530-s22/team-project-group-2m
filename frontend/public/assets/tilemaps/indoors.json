@@ -204,9 +204,9 @@
                 {
                  "height":125.333,
                  "id":26,
-                 "name":"Foyer Table 2",
+                 "name":"Viewing Area",
                  "rotation":0,
-                 "type":"conversation",
+                 "type":"viewing_area",
                  "visible":true,
                  "width":192.667,
                  "x":381.6665,
