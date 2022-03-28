@@ -333,9 +333,6 @@ class CoveyGameScene extends Phaser.Scene {
           }
         }
         if (this.currentViewingArea) {
-          if(this.currentViewingArea.viewingArea){
-            this.lastLocation.conversationLabel = this.currentViewingArea.label;
-          }
           if (
             !Phaser.Geom.Rectangle.Overlaps(
               this.currentViewingArea.sprite.getBounds(),
@@ -831,15 +828,6 @@ export default function WorldMap(): JSX.Element {
     }
   }, [video, newConversationModalOpen]);
 
-  const newViewingModalOpen = isViewingAreaModalOpen !== undefined;
-  useEffect(() => {
-    if (newViewingModalOpen) {
-      video?.pauseGame();
-    } else {
-      video?.unPauseGame();
-    }
-  }, [video, newViewingModalOpen]);
-
   const newConversationModal = useMemo(() => {
     if (newConversation) {
       video?.pauseGame();
@@ -859,12 +847,10 @@ export default function WorldMap(): JSX.Element {
 
   const newViewingAreaModal = useMemo(() => {
     if (isViewingAreaModalOpen) {
-      video?.pauseGame();
       return (
         <ViewingAreaModal
           isOpen={isViewingAreaModalOpen !== undefined}
           closeModal={() => {
-            video?.unPauseGame();
             setNewViewingArea(undefined);
           }}
         />

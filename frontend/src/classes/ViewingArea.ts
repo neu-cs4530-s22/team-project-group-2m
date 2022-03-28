@@ -1,14 +1,17 @@
 import BoundingBox from './BoundingBox';
 
+/**
+ * Represents a type Server Viewing Area.
+ */
 export type ServerViewingArea = {
   label: string;
   occupantsByID: string[];
   boundingBox: BoundingBox;
 };
 
-export type ViewingAreaListener = {
-  onOccupantsChange?: (newOccupants: string[]) => void;
-};
+/**
+ * Represents a Viewing Area in Covey.Town.
+ */
 export default class ViewingArea {
   private _occupants: string[] = [];
 
@@ -16,8 +19,12 @@ export default class ViewingArea {
 
   private _boundingBox: BoundingBox;
 
-  private _listeners: ViewingAreaListener[] = [];
-
+  /**
+  * Creates a Viewing Area in Covey.Town.
+  * @constructor
+  * @param {string} label - The label in the Viewing Area.
+  * @param {BoundingBox} boundingBox - The boundingBox in the Viewing Area.
+  */
   constructor(label: string, boundingBox: BoundingBox) {
     this._boundingBox = boundingBox;
     this._label = label;
@@ -25,13 +32,6 @@ export default class ViewingArea {
 
   get label() {
     return this._label;
-  }
-
-  set occupants(newOccupants: string[]) {
-    if(newOccupants.length !== this._occupants.length || !newOccupants.every((val, index) => val === this._occupants[index])){
-      this._listeners.forEach(listener => listener.onOccupantsChange?.(newOccupants));
-      this._occupants = newOccupants;
-    }
   }
 
   get occupants() {
@@ -48,26 +48,5 @@ export default class ViewingArea {
       occupantsByID: this.occupants,
       boundingBox: this.getBoundingBox(),
     };
-  }
-
-  addListener(listener: ViewingAreaListener) {
-    this._listeners.push(listener);
-  }
-
-  removeListener(listener: ViewingAreaListener) {
-    this._listeners = this._listeners.filter(eachListener => eachListener !== listener);
-  }
-
-  copy() : ViewingArea{
-    const ret = new ViewingArea(this.label,this._boundingBox);
-    ret.occupants = this.occupants.concat([]);
-    this._listeners.forEach(listener => ret.addListener(listener));
-    return ret;
-  }
-
-  static fromServerViewingArea(serverArea: ServerViewingArea): ViewingArea {
-    const ret = new ViewingArea(serverArea.label, BoundingBox.fromStruct(serverArea.boundingBox));
-    ret.occupants = serverArea.occupantsByID;
-    return ret;
   }
 }
