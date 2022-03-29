@@ -857,7 +857,7 @@ export default function WorldMap(): JSX.Element {
       );
     }
     return <></>;
-  }, [video, isViewingAreaModalOpen, setNewViewingArea]);
+  }, [isViewingAreaModalOpen, setNewViewingArea]);
 
   return (
     <div id='app-container'>
