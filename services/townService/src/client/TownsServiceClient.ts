@@ -107,6 +107,9 @@ export interface ConversationAreaCreateRequest {
   conversationArea: ServerConversationArea;
 }
 
+/**
+ * Payload sent by the client to update a video status
+ */
 export interface VideoStatusUpdateRequest {
   coveyTownID: string;
   sessionToken: string;
