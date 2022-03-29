@@ -31,5 +31,3 @@ export default function ViewingAreaModal( {isOpen, closeModal} : NewViewingAreaM
     </Modal>
   );
 }
-    
-    
