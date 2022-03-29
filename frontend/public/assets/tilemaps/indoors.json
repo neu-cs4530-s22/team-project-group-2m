@@ -206,7 +206,7 @@
                  "id":26,
                  "name":"Viewing Area",
                  "rotation":0,
-                 "type":"viewing_area",
+                 "type":"viewing-area",
                  "visible":true,
                  "width":192.667,
                  "x":381.6665,
