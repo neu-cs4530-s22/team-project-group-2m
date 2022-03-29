@@ -4,6 +4,7 @@ import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
+import ViewingArea from '../../classes/ViewingArea';
 import useConversationAreas from '../../hooks/useConversationAreas';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayerMovement from '../../hooks/usePlayerMovement';
@@ -11,6 +12,7 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
+import ViewingAreaModal from './ViewingAreaModal'
 
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
@@ -21,6 +23,13 @@ type ConversationGameObjects = {
   sprite: Phaser.GameObjects.Sprite;
   label: string;
   conversationArea?: ConversationArea;
+};
+
+type ViewingAreaGameObjects = {
+  labelText: Phaser.GameObjects.Text;
+  sprite: Phaser.GameObjects.Sprite;
+  label: string;
+  viewingArea?: ViewingArea;
 };
 
 class CoveyGameScene extends Phaser.Scene {
@@ -34,6 +43,8 @@ class CoveyGameScene extends Phaser.Scene {
   private players: Player[] = [];
 
   private conversationAreas: ConversationGameObjects[] = [];
+
+  private viewingAreas: ViewingAreaGameObjects[] = [];
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
@@ -56,9 +67,15 @@ class CoveyGameScene extends Phaser.Scene {
 
   private currentConversationArea?: ConversationGameObjects;
 
+  private currentViewingArea?: ViewingAreaGameObjects;
+
   private infoTextBox?: Phaser.GameObjects.Text;
 
+  private infoTextBoxViewingArea?: Phaser.GameObjects.Text;
+
   private setNewConversation: (conv: ConversationArea) => void;
+
+  private setNewViewingArea: (conv: ViewingArea) => void;
 
   private _onGameReadyListeners: Callback[] = [];
 
@@ -66,6 +83,7 @@ class CoveyGameScene extends Phaser.Scene {
     video: Video,
     emitMovement: (loc: UserLocation) => void,
     setNewConversation: (conv: ConversationArea) => void,
+    setNewViewingArea: (conv: ViewingArea) => void,
     myPlayerID: string,
   ) {
     super('PlayGame');
@@ -73,6 +91,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.emitMovement = emitMovement;
     this.myPlayerID = myPlayerID;
     this.setNewConversation = setNewConversation;
+    this.setNewViewingArea = setNewViewingArea;
   }
 
   preload() {
@@ -313,6 +332,18 @@ class CoveyGameScene extends Phaser.Scene {
             this.lastLocation.conversationLabel = undefined;
           }
         }
+        if (this.currentViewingArea) {
+          if (
+            !Phaser.Geom.Rectangle.Overlaps(
+              this.currentViewingArea.sprite.getBounds(),
+              this.player.sprite.getBounds(),
+            )
+          ) {
+            this.infoTextBoxViewingArea?.setVisible(false);
+            this.currentViewingArea = undefined;
+            this.lastLocation.conversationLabel = undefined;
+          }
+        }
         this.emitMovement(this.lastLocation);
       }
     }
@@ -382,10 +413,22 @@ class CoveyGameScene extends Phaser.Scene {
       'Objects',
       obj => obj.type === 'conversation',
     );
+
+    const viewingAreaObjects = map.filterObjects(
+      'Objects',
+      obj => obj.type === 'viewing-area',
+    );
+
     const conversationSprites = map.createFromObjects(
       'Objects',
       conversationAreaObjects.map(obj => ({ id: obj.id })),
     );
+
+    const viewingAreaSprites = map.createFromObjects(
+      'Objects',
+      viewingAreaObjects.map(obj => ({ id: obj.id })),
+    );
+
     this.physics.world.enable(conversationSprites);
     conversationSprites.forEach(conversation => {
       const sprite = conversation as Phaser.GameObjects.Sprite;
@@ -413,6 +456,26 @@ class CoveyGameScene extends Phaser.Scene {
       });
     });
 
+    this.physics.world.enable(viewingAreaSprites);
+    viewingAreaSprites.forEach(viewingArea => {
+      const sprite = viewingArea as Phaser.GameObjects.Sprite;
+      sprite.y += sprite.displayHeight;
+      const labelText = this.add.text(
+        sprite.x - sprite.displayWidth / 2,
+        sprite.y - sprite.displayHeight / 2,
+        viewingArea.name,
+        { color: '#FFFFFF', backgroundColor: '#000000' },
+      );
+      sprite.setTintFill();
+      sprite.setAlpha(0.3);
+
+      this.viewingAreas.push({
+        labelText,
+        sprite,
+        label: viewingArea.name,
+      });
+    });
+
     this.infoTextBox = this.add
       .text(
         this.game.scale.width / 2,
@@ -424,6 +487,18 @@ class CoveyGameScene extends Phaser.Scene {
       .setDepth(30);
     this.infoTextBox.setVisible(false);
     this.infoTextBox.x = this.game.scale.width / 2 - this.infoTextBox.width / 2;
+
+    this.infoTextBoxViewingArea = this.add
+    .text(
+      this.game.scale.width / 2,
+      this.game.scale.height / 2,
+      "Press spacebar to enter the movie!",
+      { color: '#000000', backgroundColor: '#FFFFFF' },
+    )
+    .setScrollFactor(0)
+    .setDepth(30);
+  this.infoTextBoxViewingArea.setVisible(false);
+  this.infoTextBoxViewingArea.x = this.game.scale.width / 2 - this.infoTextBoxViewingArea.width / 2;
 
     const labels = map.filterObjects('Objects', obj => obj.name === 'label');
     labels.forEach(label => {
@@ -527,6 +602,33 @@ class CoveyGameScene extends Phaser.Scene {
             this.setNewConversation(newConversation);
           }
           this.infoTextBox?.setVisible(true);
+        }
+      },
+    );
+    
+    this.physics.add.overlap(
+      sprite,
+      viewingAreaSprites,
+      (overlappingPlayer, viewingAreaSprite) => {
+        const viewingAreaLabel = viewingAreaSprite.name;
+        const view = this.viewingAreas.find(area => area.label === viewingAreaLabel);
+        this.currentViewingArea = view;
+        if (view?.viewingArea) {
+          this.infoTextBoxViewingArea?.setVisible(false);
+          const localLastLocation = this.lastLocation;
+          if(localLastLocation && localLastLocation.viewingAreaLabel !== view.viewingArea.label){
+            localLastLocation.viewingAreaLabel = view.viewingArea.label;
+            this.emitMovement(localLastLocation);
+          }
+        } else {
+          if (cursorKeys.space.isDown) {
+            const setNewViewingArea = new ViewingArea(
+              viewingAreaLabel,
+              BoundingBox.fromSprite(viewingAreaSprite as Phaser.GameObjects.Sprite),
+            );
+            this.setNewViewingArea(setNewViewingArea);
+          }
+          this.infoTextBoxViewingArea?.setVisible(true);
         }
       },
     );
@@ -659,6 +761,7 @@ export default function WorldMap(): JSX.Element {
   const conversationAreas = useConversationAreas();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
+  const [isViewingAreaModalOpen, setNewViewingArea] = useState<ViewingArea>();
   const playerMovementCallbacks = usePlayerMovement();
   const players = usePlayersInTown();
 
@@ -683,7 +786,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, myPlayerID);
+      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, setNewViewingArea, myPlayerID);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -742,9 +845,24 @@ export default function WorldMap(): JSX.Element {
     return <></>;
   }, [video, newConversation, setNewConversation]);
 
+  const newViewingAreaModal = useMemo(() => {
+    if (isViewingAreaModalOpen) {
+      return (
+        <ViewingAreaModal
+          isOpen={isViewingAreaModalOpen !== undefined}
+          closeModal={() => {
+            setNewViewingArea(undefined);
+          }}
+        />
+      );
+    }
+    return <></>;
+  }, [isViewingAreaModalOpen, setNewViewingArea]);
+
   return (
     <div id='app-container'>
       {newConversationModal}
+      {newViewingAreaModal}
       <div id='map-container' />
       <div id='social-container'>
         <SocialSidebar />

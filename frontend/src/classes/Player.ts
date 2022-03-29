@@ -37,4 +37,5 @@ export type UserLocation = {
   rotation: Direction,
   moving: boolean,
   conversationLabel?: string
+  viewingAreaLabel?: string
 };
