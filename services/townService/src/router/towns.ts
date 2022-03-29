@@ -9,7 +9,7 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
-  viewingAreaCreateHandler,
+  videoStatusUpdateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -127,12 +127,12 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
-  app.post('/towns/:townID/viewingArea', express.json(), async (req, res) => {
+  app.post('/towns/:townID/videoStatus', express.json(), async (req, res) => {
     try {
-      const result = viewingAreaCreateHandler({
+      const result = videoStatusUpdateHandler({
         coveyTownID: req.params.townID,
         sessionToken: req.body.sessionToken,
-        viewingArea: req.body.viewingArea,
+        videoStatus: req.body.videoStatus,
       });
       res.status(StatusCodes.OK)
         .json(result);

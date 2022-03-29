@@ -21,15 +21,6 @@ export type ServerConversationArea = {
   occupantsByID: string[];
   boundingBox: BoundingBox;
 };
-/**
- * Represents an area where users can view videos together
- */
-export type ServerViewingArea = {
-  videoStatus: VideoStatus;
-  /** users watching the video * */
-  occupantsByID: string[];
-  boundingBox: BoundingBox;
-};
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -116,10 +107,10 @@ export interface ConversationAreaCreateRequest {
   conversationArea: ServerConversationArea;
 }
 
-export interface ViewingAreaCreateRequest {
+export interface VideoStatusUpdateRequest {
   coveyTownID: string;
   sessionToken: string;
-  viewingArea: ServerViewingArea;
+  videoStatus: VideoStatus;
 }
 
 /**
@@ -193,7 +184,7 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async createViewingArea(requestData: ViewingAreaCreateRequest) : Promise<void>{
+  async updateViewingArea(requestData: ViewingAreaUpdateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/viewingArea`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
