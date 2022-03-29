@@ -114,6 +114,15 @@ export interface VideoStatusUpdateRequest {
 }
 
 /**
+ * Payload sent by the client to update a video status
+ */
+export interface VideoStatusUpdateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  videoStatus: VideoStatus;
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
