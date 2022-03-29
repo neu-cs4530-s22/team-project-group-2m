@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ServerConversationArea, ViewingAreaCreateRequest } from '../client/TownsServiceClient';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -195,6 +195,23 @@ export function conversationAreaCreateHandler(_requestData: ConversationAreaCrea
     isOK: success,
     response: {},
     message: !success ? `Unable to create conversation area ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}` : undefined,
+  };
+}
+
+/**
+ * TODO
+ * A handler to process the "Create Viewing Area" request
+ * The intended flow of this handler is:
+ * * Fetch the town controller for the specified town ID
+ * * Validate that the sessionToken is valid for that town
+ * * Ask the TownController to create the viewing area
+ * @param _requestData Viewing area create request
+ */
+export function viewingAreaCreateHandler(_requestData: ViewingAreaCreateRequest) : ResponseEnvelope<Record<string, null>> {
+  return {
+    isOK: true,
+    response: {},
+    message: !true ? `Unable to create viewing area` : undefined,
   };
 }
 

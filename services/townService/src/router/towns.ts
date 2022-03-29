@@ -9,6 +9,7 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  viewingAreaCreateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -114,6 +115,24 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         coveyTownID: req.params.townID,
         sessionToken: req.body.sessionToken,
         conversationArea: req.body.conversationArea,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  app.post('/towns/:townID/viewingArea', express.json(), async (req, res) => {
+    try {
+      const result = viewingAreaCreateHandler({
+        coveyTownID: req.params.townID,
+        sessionToken: req.body.sessionToken,
+        viewingArea: req.body.viewingArea,
       });
       res.status(StatusCodes.OK)
         .json(result);

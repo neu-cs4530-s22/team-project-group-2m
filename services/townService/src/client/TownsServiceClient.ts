@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-import { UserLocation } from '../CoveyTypes';
+import { UserLocation, VideoStatus } from '../CoveyTypes';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
@@ -18,6 +18,15 @@ export type BoundingBox = {
 export type ServerConversationArea = {
   label: string;
   topic: string;
+  occupantsByID: string[];
+  boundingBox: BoundingBox;
+};
+/**
+ * Represents an area where users can view videos together
+ */
+export type ServerViewingArea = {
+  videoStatus: VideoStatus;
+  /** users watching the video * */
   occupantsByID: string[];
   boundingBox: BoundingBox;
 };
@@ -107,6 +116,12 @@ export interface ConversationAreaCreateRequest {
   conversationArea: ServerConversationArea;
 }
 
+export interface ViewingAreaCreateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  viewingArea: ServerViewingArea;
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -175,6 +190,11 @@ export default class TownsServiceClient {
 
   async createConversationArea(requestData: ConversationAreaCreateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async createViewingArea(requestData: ViewingAreaCreateRequest) : Promise<void>{
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/viewingArea`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
