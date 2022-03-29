@@ -12,10 +12,19 @@ const COLOR_SCHEME_STR = "green"
 const BUTTON_TYPE_STR = "submit"
 const BUTTON_TEXT = "Submit"
 
+/**
+ * Displays a form which a users can input and submit text in the form of a url
+ * 
+ * Input field holds placeholder text as an example to user of what input should look like
+ * 
+ * Form is labeled with instructions "Enter Video Link Below", submit button is labeled "Submit"
+ * 
+ */
 export default function URLForm() {
 
+  // TODO: Possibly replace useForm with a custom useContext wrapper, similar to other hooks
   const { handleSubmit } = useForm();
-  // TODO handling onSubmit
+  // TODO: handling onSubmit
   const onSubmit = async (data: SubmitHandler<any>) => { console.log(data); };
 
   return (
