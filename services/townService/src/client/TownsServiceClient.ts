@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-import { UserLocation } from '../CoveyTypes';
+import { UserLocation, VideoStatus } from '../CoveyTypes';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
@@ -108,6 +108,15 @@ export interface ConversationAreaCreateRequest {
 }
 
 /**
+ * Payload sent by the client to update a video status
+ */
+export interface VideoStatusUpdateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  videoStatus: VideoStatus;
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
@@ -175,6 +184,11 @@ export default class TownsServiceClient {
 
   async createConversationArea(requestData: ConversationAreaCreateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async updateViewingArea(requestData: ViewingAreaUpdateRequest) : Promise<void>{
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/viewingArea`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

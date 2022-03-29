@@ -1,6 +1,6 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
-import { ChatMessage, UserLocation } from '../CoveyTypes';
+import { ChatMessage, UserLocation, VideoStatus } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -54,6 +54,10 @@ export default class CoveyTownController {
     return this._conversationAreas;
   }
 
+  get videoStatus(): VideoStatus | undefined {
+    return this._videoStatus;
+  }
+
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
@@ -78,6 +82,8 @@ export default class CoveyTownController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
+
+  private _videoStatus?: VideoStatus;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
@@ -206,6 +212,16 @@ export default class CoveyTownController {
     playersInThisConversation.forEach(player => {player.activeConversationArea = newArea;});
     newArea.occupantsByID = playersInThisConversation.map(player => player.id);
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
+    return true;
+  }
+
+  /**
+   * Updated this town controller's video status metadata with new video status
+   * @param newVideoStatus - updated metadata
+   * @returns true if updated successfully
+   */
+  updateVideoStatus(newVideoStatus: VideoStatus): boolean {
+    this._videoStatus = newVideoStatus;
     return true;
   }
 

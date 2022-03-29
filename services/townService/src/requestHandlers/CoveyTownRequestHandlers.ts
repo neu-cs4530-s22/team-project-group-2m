@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ServerConversationArea, VideoStatusUpdateRequest } from '../client/TownsServiceClient';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -195,6 +195,31 @@ export function conversationAreaCreateHandler(_requestData: ConversationAreaCrea
     isOK: success,
     response: {},
     message: !success ? `Unable to create conversation area ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}` : undefined,
+  };
+}
+
+/**
+ * A handler to process the "Create Viewing Area" request
+ * The intended flow of this handler is:
+ * * Fetch the town controller for the specified town ID
+ * * Validate that the sessionToken is valid for that town
+ * * Ask the TownController to create the viewing area
+ * @param _requestData Viewing area create request
+ */
+export function videoStatusUpdateHandler(_requestData: VideoStatusUpdateRequest) : ResponseEnvelope<Record<string, null>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
+  if (!townController?.getSessionByToken(_requestData.sessionToken)){
+    return {
+      isOK: false, response: {}, message: `Unable to update video with url: ${_requestData.videoStatus.url}`,
+    };
+  }
+  const success = townController.updateVideoStatus(_requestData.videoStatus);
+
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? `Failed to update video with url: ${_requestData.videoStatus.url}` : undefined,
   };
 }
 
