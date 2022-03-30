@@ -191,10 +191,4 @@ export default class TownsServiceClient {
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/viewingArea`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
-
-  async validateViewingArea(requestData: ViewingAreaUpdateRequest) : Promise<void>{
-    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/viewingArea`, requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
-  }
-
 }
