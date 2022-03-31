@@ -1,7 +1,7 @@
 /**
  * Represents the metadata for the video player component
  */
-export interface VideoPlayer {
+export default interface VideoPlayer {
   /** Sets the url of the current video * */
   setURL(url: string): boolean;
   /** Sets the timestamp of the current video * */
