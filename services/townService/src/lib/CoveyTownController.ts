@@ -252,24 +252,31 @@ export default class CoveyTownController {
   }
 
   static validTimestamp(timestamp: string, url: string): boolean {
-    let inputHour = 0;
-    let inputMinute = 0;
-    let inputSecond = 0;
-    if (/\d\d:\d\d/.test(timestamp)){
-      inputMinute = parseInt(timestamp.split(':')[0]);
-      inputSecond = parseInt(timestamp.split(':')[1]);
-      if (inputMinute > 60 || inputSecond > 60) {
+    let inputHours = 0;
+    let inputMinutes = 0;
+    let inputSeconds = 0;
+    // convert timestamp string into hours minutes seconds 
+    
+    // hours minutes second format ex: 02:03:15 
+    if (/^\d\d:\d\d:\d\d$/.test(timestamp)) {
+      inputHours = parseInt(timestamp.split(':')[0]);
+      inputMinutes = parseInt(timestamp.split(':')[1]);
+      inputSeconds = parseInt(timestamp.split(':')[2]);
+      console.log(timestamp.split(':')[2]);
+      // max 24 hours and minutes/seconds can not be greatr than 60
+      if (inputHours >= 23 || inputMinutes >= 60 || inputSeconds >= 60) {
+        return false;
+      } 
+      // minutes second format ex: 15:23
+      } else if (/^\d\d:\d\d$/.test(timestamp)) {
+      inputMinutes = parseInt(timestamp.split(':')[0]);
+      inputSeconds = parseInt(timestamp.split(':')[1]);
+      if (inputMinutes >= 60 || inputSeconds >= 60) {
         return false;
       }
-    } else if (/\d\d:\d\d:\d\d/.test(timestamp)){
-      inputHour = parseInt(timestamp.split(':')[0]);
-      inputMinute = parseInt(timestamp.split(':')[1]);
-      inputSecond = parseInt(timestamp.split(':')[2]);
-      if (inputHour > 24 || inputMinute > 60 || inputSecond > 60) {
-        return false;
-      }
-    }
-    else {
+
+      // if two above formats not followed invalid timestamp
+    } else {
       return false;
     }
     // get video ID from VideoStatus url
@@ -278,30 +285,55 @@ export default class CoveyTownController {
     // use video ID to access API and get relevant info
     const apiURL = `https://www.googleapis.com/youtube/v3/videos?id=${videoID}&part=contentDetails&key=AIzaSyA7g-IM__xlupaBCCmU20LG4dJjC1IrUSc`;
     const jsonData = CoveyTownController.getVideoInfo(apiURL);
+    // get video duration in ISO 8601 format ex: PT9H1M20S -> 9 hours 1 min 20 sec
     const duration = jsonData.items["0"].contentDetails.duration;
+    
+    // convert iso 8601 into hour min sec variables
     let shortenedDuration = duration.substring(2);
-    let hours = 0;
-    let minutes = 0;
-    let seconds = 0;
-    if (b.includes('H')) {
-      hours = parseInt(b.split('H')[0])
-      b = b.replace(hours + 'H', "");
+    let maxHours = 0;
+    let maxMinutes = 0;
+    let maxSeconds = 0;
+    if (shortenedDuration.includes('H')) {
+      maxHours = parseInt(shortenedDuration.split('H')[0])
+      shortenedDuration = shortenedDuration.replace(maxHours + 'H', "");
     }
-    console.log(b)
-    if (b.includes('M')) {
-      minutes = parseInt(b.split('M')[0])
-      b = b.replace(minutes + 'M', "");
+    if (shortenedDuration.includes('M')) {
+      maxMinutes = parseInt(shortenedDuration.split('M')[0])
+      shortenedDuration = shortenedDuration.replace(maxMinutes + 'M', "");
     }
-    if (b.includes('S')) {
-      seconds = parseInt(b.split('S')[0])
+    if (shortenedDuration.includes('S')) {
+      maxSeconds = parseInt(shortenedDuration.split('S')[0])
     }
-    console.log(hours)
-    console.log(minutes)
-    console.log(seconds)
-    return true;
+    // is supplied timestamp less than max possible timestamp
+    const maxSum = 3600 * maxHours  + 60 * maxMinutes + maxSeconds;
+    const inputSum = 3600 * inputHours  + 60 * inputMinutes + inputSeconds;
+    return inputSum <= maxSum ? true : false;
   }
     
-  
+  // use API to fetch JSON data for a specific video
+  //{
+//   etag: "7LqU-DFxkslMqVSx7QHgQBnCprM",
+//   items: [{
+//   contentDetails: {
+//     caption: "false",
+//     contentRating: { ... },
+//     definition: "sd",
+//     dimension: "2d",
+//     duration: "PT9H1M20S",
+//     licensedContent: false,
+//     projection: "rectangular"
+//   },
+//   etag: "KeKDEe1-vtW2JDJnJuxC8RtjoWE",
+//   id: "xoirXUhEpIo",
+//   kind: "youtube#video"
+// }],
+//   kind: "youtube#videoListResponse",
+//   pageInfo: {
+//     resultsPerPage: 1,
+//     totalResults: 1
+//   }
+// }
+
   static async getVideoInfo(url: string){
     const response = await fetch(url);
     const data = await response.json();
