@@ -7,6 +7,7 @@ import PlayerSession from '../types/PlayerSession';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
 
+
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 const YOUTUBE_URL_PATTERN = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
 const URL_PATTERNS = [YOUTUBE_URL_PATTERN];
@@ -231,8 +232,10 @@ export default class CoveyTownController {
   }
 
   static validVideoStatus(videoStatus: VideoStatus): boolean {
-    return CoveyTownController.validURL(videoStatus.url);
+    return CoveyTownController.validURL(videoStatus.url) && CoveyTownController.validTimestamp(videoStatus.timestamp);
   }
+
+
 
   /**
    * Validates whether a given url is a url to a publicly available video streaming website
@@ -244,6 +247,34 @@ export default class CoveyTownController {
       return false;
     }
     return URL_PATTERNS.find(pattern => url.match(pattern) != null) ? true : false;
+  }
+
+  static validTimestamp(timestamp: string): boolean {
+    const test = 'https://www.googleapis.com/youtube/v3/videos?id=rru2passumI&part=contentDetails&key=AIzaSyA7g-IM__xlupaBCCmU20LG4dJjC1IrUSc';
+    async function funcName(url) {
+      const response = await fetch(url);
+      var data = await response.json();
+      const a = data.items["0"].contentDetails.duration
+      let b = a.substring(2);
+      let hours = 0;
+      let minutes = 0;
+      let seconds = 0;
+      if (b.includes('H')) {
+        hours = parseInt(b.split('H')[0])
+        b = b.replace(hours + 'H', "");
+      }
+      console.log(b)
+      if (b.includes('M')) {
+        minutes = parseInt(b.split('M')[0])
+        b = b.replace(minutes + 'M', "");
+      }
+      if (b.includes('S')) {
+        seconds = parseInt(b.split('S')[0])
+      }
+      console.log(hours)
+      console.log(minutes)
+      console.log(seconds)
+    }
   }
 
   /**
