@@ -1,4 +1,6 @@
 import { customAlphabet, nanoid } from 'nanoid';
+import { getMaxListeners } from 'process';
+import { stringify } from 'querystring';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation, VideoStatus } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
@@ -232,7 +234,7 @@ export default class CoveyTownController {
   }
 
   static validVideoStatus(videoStatus: VideoStatus): boolean {
-    return CoveyTownController.validURL(videoStatus.url) && CoveyTownController.validTimestamp(videoStatus.timestamp);
+    return CoveyTownController.validURL(videoStatus.url) && CoveyTownController.validTimestamp(videoStatus.timestamp, videoStatus.url);
   }
 
 
@@ -249,33 +251,63 @@ export default class CoveyTownController {
     return URL_PATTERNS.find(pattern => url.match(pattern) != null) ? true : false;
   }
 
-  static validTimestamp(timestamp: string): boolean {
-    const test = 'https://www.googleapis.com/youtube/v3/videos?id=rru2passumI&part=contentDetails&key=AIzaSyA7g-IM__xlupaBCCmU20LG4dJjC1IrUSc';
-    async function funcName(url) {
-      const response = await fetch(url);
-      var data = await response.json();
-      const a = data.items["0"].contentDetails.duration
-      let b = a.substring(2);
-      let hours = 0;
-      let minutes = 0;
-      let seconds = 0;
-      if (b.includes('H')) {
-        hours = parseInt(b.split('H')[0])
-        b = b.replace(hours + 'H', "");
+  static validTimestamp(timestamp: string, url: string): boolean {
+    let inputHour = 0;
+    let inputMinute = 0;
+    let inputSecond = 0;
+    if (/\d\d:\d\d/.test(timestamp)){
+      inputMinute = parseInt(timestamp.split(':')[0]);
+      inputSecond = parseInt(timestamp.split(':')[1]);
+      if (inputMinute > 60 || inputSecond > 60) {
+        return false;
       }
-      console.log(b)
-      if (b.includes('M')) {
-        minutes = parseInt(b.split('M')[0])
-        b = b.replace(minutes + 'M', "");
+    } else if (/\d\d:\d\d:\d\d/.test(timestamp)){
+      inputHour = parseInt(timestamp.split(':')[0]);
+      inputMinute = parseInt(timestamp.split(':')[1]);
+      inputSecond = parseInt(timestamp.split(':')[2]);
+      if (inputHour > 24 || inputMinute > 60 || inputSecond > 60) {
+        return false;
       }
-      if (b.includes('S')) {
-        seconds = parseInt(b.split('S')[0])
-      }
-      console.log(hours)
-      console.log(minutes)
-      console.log(seconds)
     }
+    else {
+      return false;
+    }
+    // get video ID from VideoStatus url
+    const match = url.match(YOUTUBE_URL_PATTERN);
+    const videoID = (match&&match[7].length==11)? match[7] : false;
+    // use video ID to access API and get relevant info
+    const apiURL = `https://www.googleapis.com/youtube/v3/videos?id=${videoID}&part=contentDetails&key=AIzaSyA7g-IM__xlupaBCCmU20LG4dJjC1IrUSc`;
+    const jsonData = CoveyTownController.getVideoInfo(apiURL);
+    const duration = jsonData.items["0"].contentDetails.duration;
+    let shortenedDuration = duration.substring(2);
+    let hours = 0;
+    let minutes = 0;
+    let seconds = 0;
+    if (b.includes('H')) {
+      hours = parseInt(b.split('H')[0])
+      b = b.replace(hours + 'H', "");
+    }
+    console.log(b)
+    if (b.includes('M')) {
+      minutes = parseInt(b.split('M')[0])
+      b = b.replace(minutes + 'M', "");
+    }
+    if (b.includes('S')) {
+      seconds = parseInt(b.split('S')[0])
+    }
+    console.log(hours)
+    console.log(minutes)
+    console.log(seconds)
+    return true;
   }
+    
+  
+  static async getVideoInfo(url: string){
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+    }
+
 
   /**
    * Detects whether two bounding boxes overlap and share any points
