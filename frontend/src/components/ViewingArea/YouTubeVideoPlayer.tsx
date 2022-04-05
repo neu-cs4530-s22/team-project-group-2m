@@ -4,10 +4,18 @@ import { VideoStatus } from '../../../../services/townService/src/CoveyTypes';
 import VideoPlayer from "./VideoPlayer";
 
 /**
+ * youtubeLinkMatcher is a regex expression that matches upon a YouTube link
+ * and upon execution returns an array of the parts of that link. A video ID can
+ * be extracted from this. Adapted from:
+ * https://stackoverflow.com/questions/3452546/how-do-i-get-the-youtube-video-id-from-a-url
+ */
+export const youtubeLinkMatcher = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
+
+/**
  * YouTubeVideoPlayer is a concrete implementation of a VideoPlayer
  * specifically meant to control and display videos from YouTube.
  */
-class YouTubeVideoPlayer implements VideoPlayer {
+export class YouTubeVideoPlayer implements VideoPlayer {
 
   private videoStatus: VideoStatus;
 
@@ -35,9 +43,7 @@ class YouTubeVideoPlayer implements VideoPlayer {
    * @returns the video ID contained within the url.
    */
   private videoID(): string {
-    // adapted from https://stackoverflow.com/questions/3452546/how-do-i-get-the-youtube-video-id-from-a-url
-    const regex = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
-    return regex.exec(this.videoStatus.url)?.[3] ?? '';
+    return youtubeLinkMatcher.exec(this.videoStatus.url)?.[3] ?? '';
   }
 
   /**
