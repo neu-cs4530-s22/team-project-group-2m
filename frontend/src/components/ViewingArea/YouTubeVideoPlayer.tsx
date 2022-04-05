@@ -12,6 +12,17 @@ import VideoPlayer from "./VideoPlayer";
 export const youtubeLinkMatcher = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
 
 /**
+ * Retrieves a YouTube video ID from a YouTube link.
+ * @param url - a YouTube URL.
+ * @returns the video ID contained within the url.
+ */
+export function youtubeVideoIDFromURL(url: string): string {
+  return youtubeLinkMatcher.exec(url)?.[3] ?? '';
+}
+
+type VideoStatusChangedFunction = (a: VideoStatus) => boolean;
+
+/**
  * YouTubeVideoPlayer is a concrete implementation of a VideoPlayer
  * specifically meant to control and display videos from YouTube.
  */
@@ -19,42 +30,27 @@ export class YouTubeVideoPlayer implements VideoPlayer {
 
   private videoStatus: VideoStatus;
 
-  constructor(videoStatus: VideoStatus) {
+  // TODO: when implemented
+  private onVideoStatusChanged: VideoStatusChangedFunction;
+
+  constructor(videoStatus: VideoStatus, onVideoStatusChanged: VideoStatusChangedFunction) {
     this.videoStatus = videoStatus;
+    this.onVideoStatusChanged = onVideoStatusChanged;
   }
 
   setURL(url: string): boolean {
     this.videoStatus.url = url;
-    return true;
+    return this.onVideoStatusChanged({ ...this.videoStatus, url });
   }
 
-  setTimestamp(timestamp: string): boolean {
-    this.videoStatus.timestamp = timestamp;
-    return true;
+  setElapsed(elapsed: number): boolean {
+    this.videoStatus.elapsed = elapsed;
+    return this.onVideoStatusChanged({ ...this.videoStatus, elapsed });
   }
 
   setIsPaused(isPaused: boolean): boolean {
     this.videoStatus.isPaused = isPaused;
-    return true;
-  }
-
-  /**
-   * Retrieves a YouTube video ID from a YouTube link.
-   * @returns the video ID contained within the url.
-   */
-  private videoID(): string {
-    return youtubeLinkMatcher.exec(this.videoStatus.url)?.[3] ?? '';
-  }
-
-  /**
-   * Converts the timestamp (in the form MM:SS) to a number of seconds.
-   * @returns the number of seconds represented by the timestamp.
-   */
-  private timestampToSeconds(): number {
-    const { timestamp } = this.videoStatus;
-    const minutesString = timestamp.substring(0, timestamp.indexOf(':'));
-    const secondsString = timestamp.substring(timestamp.indexOf(':') + 1);
-    return parseInt(minutesString, 10) * 60 + parseInt(secondsString, 10);
+    return this.onVideoStatusChanged({ ...this.videoStatus, isPaused });
   }
 
   /**
@@ -64,7 +60,7 @@ export class YouTubeVideoPlayer implements VideoPlayer {
    * and disabling autoplay.
    */
   private queryParams(): string {
-    let params = `start=${this.timestampToSeconds()}`;
+    let params = `start=${this.videoStatus.elapsed}`;
     // disable the embed controls
     params += '&controls=0';
     // disable autoplay
@@ -75,9 +71,10 @@ export class YouTubeVideoPlayer implements VideoPlayer {
   }
 
   videoComponent(): JSX.Element {
+    // TODO: add url, progress bar, and play/pause button when implemented
     return (
       <LiteYouTubeEmbed
-        id={this.videoID()}
+        id={youtubeVideoIDFromURL(this.videoStatus.url)}
         title={this.videoStatus.url}
         params={this.queryParams()}
       />
