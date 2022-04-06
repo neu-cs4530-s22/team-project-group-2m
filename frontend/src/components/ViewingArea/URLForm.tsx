@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
 
-const YOUTUBE_URL_PATTERN = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/;
+export const YOUTUBE_URL_PATTERN = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/gm;
 const FORM_LABEL_TEXT = "Enter a link to a video you would like to watch"
 const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try again"
 const EXAMPLE_INPUT = "Example: https://www.youtube.com/..."
@@ -9,15 +9,22 @@ const EXAMPLE_INPUT = "Example: https://www.youtube.com/..."
 /**
  * Performs some action with a given url
  */
-type OnURLUpdated = (url: string) => void;
+export type OnURLUpdated = (url: string) => void;
 
 /**
  * Represents props required to pass to URLForm
  */
-type URLProps = {
+export type URLFormProps = {
   onURLUpdated: OnURLUpdated;
   /** a regular expression which accepts strings in the form of video links * */
   regExpPattern: RegExp;
+}
+
+export function validURL(url: string, pattern: RegExp): string | undefined {
+  if (url.match(pattern) != null) {
+    return url;
+  }
+  return undefined;
 }
 
 /**
@@ -30,21 +37,14 @@ type URLProps = {
  * @param props - URLProps
  * 
  */
-export default function URLForm(props: URLProps): JSX.Element {
+export default function URLForm(props: URLFormProps): JSX.Element {
 
   const [url, setURL] = useState<string>('');
   const toast = useToast();
 
-  function isVideoURL(url: string, pattern: RegExp): string | undefined {
-    if (url.match(pattern) != null) {
-      return url;
-    }
-    return undefined;
-  }
-
   const handleSubmit = useCallback(async () => {
     const { onURLUpdated, regExpPattern } = props;
-    if (isVideoURL(url, regExpPattern)) {
+    if (validURL(url, regExpPattern)) {
       onURLUpdated(url);
     } else {
       toast({
@@ -52,7 +52,7 @@ export default function URLForm(props: URLProps): JSX.Element {
         status: 'error',
       });
     }
-  }, [url]);
+  }, [props, url, toast]);
 
   return (<form
             onSubmit={ev => {
