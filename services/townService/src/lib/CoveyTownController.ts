@@ -6,10 +6,9 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
+import validURL, { YOUTUBE_URL_PATTERN } from '../Utils';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
-const YOUTUBE_URL_PATTERN = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
-const URL_PATTERNS = [YOUTUBE_URL_PATTERN];
 
 /**
  * The CoveyTownController implements the logic for each town: managing the various events that
@@ -231,19 +230,8 @@ export default class CoveyTownController {
   }
 
   static validVideoStatus(videoStatus: VideoStatus): boolean {
-    return CoveyTownController.validURL(videoStatus.url);
-  }
-
-  /**
-   * Validates whether a given url is a url to a publicly available video streaming website
-   * @param url - a publicly accessible web address
-   * Reference https://stackoverflow.com/questions/28735459/how-to-validate-youtube-url-in-client-side-in-text-box
-   */
-  static validURL(url: string): boolean {
-    if (url == undefined || url == '') {
-      return false;
-    }
-    return URL_PATTERNS.find(pattern => url.match(pattern) != null) ? true : false;
+    // TODO: Validate other two VideoStatus field here
+    return validURL(videoStatus.url);
   }
 
   /**
