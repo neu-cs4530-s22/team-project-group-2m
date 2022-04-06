@@ -1,27 +1,23 @@
-import React from "react";
-import { FormControl, Input, Button, toast } from "@chakra-ui/react"
-import {
-  FormLabel,
-  FormErrorMessage,
-} from  "@chakra-ui/form-control";
-import validURL from "valid-url";
-import { SubmitHandler, useForm } from "react-hook-form";
+import React, { useState, useCallback } from "react";
+import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
 
 const YOUTUBE_URL_PATTERN = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/;
-const URL_PATTERNS = [YOUTUBE_URL_PATTERN];
 const FORM_LABEL_TEXT = "Enter a link to a video you would like to watch"
-const INVALID_URL_MESSAGE = "You entered an invalid video link, please try again"
+const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try again"
 const EXAMPLE_INPUT = "Example: https://www.youtube.com/..."
 
-function isVideoURL(url: string): string | undefined {
-  if (URL_PATTERNS.find(pattern => url.match(pattern) != null)) {
-    return url
+function isVideoURL(url: string, pattern: RegExp): string | undefined {
+  if (url.match(pattern) != null) {
+    return url;
   }
-  return undefined
+  return undefined;
 }
 
-type FormValues = {
-  url: string
+type OnURLUpdated = (url: string) => void;
+
+type URLProps = {
+  onURLUpdated: OnURLUpdated;
+  regExpPattern: RegExp;
 }
 
 /**
@@ -32,45 +28,46 @@ type FormValues = {
  * Form is labeled with instructions "Enter Video Link Below", submit button is labeled "Submit"
  * 
  */
-export default function URLForm(): JSX.Element {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isSubmitting },
-  } = useForm<FormValues>()
+export default function URLForm(props: URLProps): JSX.Element {
 
-  function onSubmit(data: SubmitHandler<FormValues>) {
-    return new Promise((resolve) => {
-      setTimeout(async () => {
-        alert("submitted");
-        resolve(data)
-      }, 3000)
-    })
-  }
+  const [url, setURL] = useState<string>('');
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={!validURL.isUri || !isVideoURL}>
-        <FormLabel htmlFor='url'>{FORM_LABEL_TEXT}</FormLabel>
-        <Input
-          id='url'
-          placeholder={EXAMPLE_INPUT}
-          /* eslint-disable react/jsx-props-no-spreading */
-          {...register('url', {
-            minLength: 20,
-            validate: {
-              validURL: (url: string) => validURL.isUri(url),
-              videoURL: (url: string) => isVideoURL(url),
-            }
-          })}
-        />
-        <FormErrorMessage>
-          {INVALID_URL_MESSAGE}
-        </FormErrorMessage>
-      </FormControl>
-      <Button mt={4} colorScheme='teal' isLoading={isSubmitting} type='submit'>
-        Submit
-      </Button>
-    </form>
+  const toast = useToast();
+
+  const handleSubmit = useCallback(async () => {
+    const { onURLUpdated, regExpPattern } = props;
+    if (isVideoURL(url, regExpPattern)) {
+      onURLUpdated(url);
+    } else {
+      toast({
+        title: INVALID_URL_MESSAGE,
+        status: 'error',
+      });
+    }
+  }, [url]);
+
+  return (<form
+            onSubmit={ev => {
+              ev.preventDefault();
+              handleSubmit();
+            }}>
+            <ModalBody pb={6}>
+              <FormControl>
+                <FormLabel htmlFor='url'>{FORM_LABEL_TEXT}</FormLabel>
+                <Input
+                  id='url'
+                  placeholder={EXAMPLE_INPUT}
+                  name='url'
+                  value={url}
+                  onChange={(e) => setURL(e.target.value)}
+                />
+              </FormControl>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
+                Submit
+              </Button>
+            </ModalFooter>
+          </form>
   )
 }
