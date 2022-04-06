@@ -229,9 +229,19 @@ export default class CoveyTownController {
     return true;
   }
 
+   /**
+   * Checks if the given timestamp in seconds is valid for the given video
+   * @param elapsed - how far you are into the video in seconds
+   * @param length - total length of video in seconds
+   * @returns true if the elapsed time is not greater than the video length
+   */
   static validVideoStatus(videoStatus: VideoStatus): boolean {
     // TODO: Validate other two VideoStatus field here
-    return validURL(videoStatus.url);
+    return validURL(videoStatus.url) && this.validElapsed(videoStatus.elapsed, videoStatus.length);
+  }
+
+  static validElapsed(elapsed: number, length: number): boolean {
+    return elapsed <= length;
   }
 
   /**
