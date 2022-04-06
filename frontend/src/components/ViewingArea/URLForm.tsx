@@ -26,11 +26,8 @@ export type URLFormProps = {
    * @param regExpPattern - a regular expression which accepts strings in the form of video links
    * @returns - a valid url or undefined
    */
-export function validURL(url: string, pattern: RegExp): string | undefined {
-  if (url.match(pattern) != null) {
-    return url;
-  }
-  return undefined;
+ export function validURL(url: string, pattern: RegExp): boolean {
+  return url.match(pattern) != null;
 }
 
 /**
