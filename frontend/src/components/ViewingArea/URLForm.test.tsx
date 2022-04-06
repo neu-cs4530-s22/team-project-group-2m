@@ -50,6 +50,12 @@ describe('URLForm', () => {
       it('should reject youtube search url', () => {
         expect(validURL('https://www.youtube.com/results?search_query=test', YOUTUBE_URL_PATTERN)).toBe(undefined);
       });
+      it('should reject empty input', () => {
+        expect(validURL('', YOUTUBE_URL_PATTERN)).toBe(undefined);
+      });
+      it('should reject input with javascript', () => {
+        expect(validURL('javascript:alert("test")', YOUTUBE_URL_PATTERN)).toBe(undefined);
+      });
     });
   });
 });
