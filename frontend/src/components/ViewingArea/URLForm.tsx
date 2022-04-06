@@ -6,17 +6,17 @@ const FORM_LABEL_TEXT = "Enter a link to a video you would like to watch"
 const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try again"
 const EXAMPLE_INPUT = "Example: https://www.youtube.com/..."
 
-function isVideoURL(url: string, pattern: RegExp): string | undefined {
-  if (url.match(pattern) != null) {
-    return url;
-  }
-  return undefined;
-}
-
+/**
+ * Performs some action with a given url
+ */
 type OnURLUpdated = (url: string) => void;
 
+/**
+ * Represents props required to pass to URLForm
+ */
 type URLProps = {
   onURLUpdated: OnURLUpdated;
+  /** a regular expression which accepts strings in the form of video links * */
   regExpPattern: RegExp;
 }
 
@@ -27,12 +27,20 @@ type URLProps = {
  * 
  * Form is labeled with instructions "Enter Video Link Below", submit button is labeled "Submit"
  * 
+ * @param props - URLProps
+ * 
  */
 export default function URLForm(props: URLProps): JSX.Element {
 
   const [url, setURL] = useState<string>('');
-
   const toast = useToast();
+
+  function isVideoURL(url: string, pattern: RegExp): string | undefined {
+    if (url.match(pattern) != null) {
+      return url;
+    }
+    return undefined;
+  }
 
   const handleSubmit = useCallback(async () => {
     const { onURLUpdated, regExpPattern } = props;
