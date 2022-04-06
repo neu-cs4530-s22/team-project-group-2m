@@ -6,7 +6,7 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
-import validURL, { YOUTUBE_URL_PATTERN } from '../Utils';
+import { validURL, YOUTUBE_URL_PATTERN } from '../Utils';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -222,16 +222,12 @@ export default class CoveyTownController {
    * @returns true if updated successfully
    */
   updateVideoStatus(newVideoStatus: VideoStatus): boolean {
-    if (!CoveyTownController.validVideoStatus(newVideoStatus)) {
+    // HARD CODED RegExp Pattern: A YouTube video is the only video that is currently supported
+    if (!validURL(newVideoStatus.url, YOUTUBE_URL_PATTERN)) {
       return false
     }
     this._videoStatus = newVideoStatus;
     return true;
-  }
-
-  static validVideoStatus(videoStatus: VideoStatus): boolean {
-    // TODO: Validate other two VideoStatus field here
-    return validURL(videoStatus.url);
   }
 
   /**
