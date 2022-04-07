@@ -9,7 +9,7 @@ import VideoPlayer from "./VideoPlayer";
  * be extracted from this. Adapted from:
  * https://stackoverflow.com/questions/3452546/how-do-i-get-the-youtube-video-id-from-a-url
  */
-export const youtubeLinkMatcher = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
+export const youtubeLinkMatcher = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/gm;
 
 /**
  * Retrieves a YouTube video ID from a YouTube link.
