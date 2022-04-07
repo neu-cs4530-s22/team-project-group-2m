@@ -211,7 +211,7 @@ export function videoStatusUpdateHandler(_requestData: VideoStatusUpdateRequest)
   const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
   if (!townController?.getSessionByToken(_requestData.sessionToken)){
     return {
-      isOK: false, response: {}, message: `Unable to update video with url: ${_requestData.videoStatus.url}`,
+      isOK: false, response: {}, message: `Unable to update video with url: ${_requestData.videoStatus.url} and time elapsed ${_requestData.videoStatus.elapsed}`,
     };
   }
   const success = townController.updateVideoStatus(_requestData.videoStatus);
@@ -219,7 +219,7 @@ export function videoStatusUpdateHandler(_requestData: VideoStatusUpdateRequest)
   return {
     isOK: success,
     response: {},
-    message: !success ? `Failed to update video with url: ${_requestData.videoStatus.url}` : undefined,
+    message: !success ? `Failed to update video with url: ${_requestData.videoStatus.url} and time elapsed ${_requestData.videoStatus.elapsed}` : undefined,
   };
 }
 

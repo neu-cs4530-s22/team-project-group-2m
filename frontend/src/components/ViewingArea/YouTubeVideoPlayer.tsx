@@ -2,14 +2,7 @@ import React from 'react';
 import LiteYouTubeEmbed from 'react-lite-youtube-embed';
 import { VideoStatus } from '../../CoveyTypes';
 import VideoPlayer from "./VideoPlayer";
-
-/**
- * youtubeLinkMatcher is a regex expression that matches upon a YouTube link
- * and upon execution returns an array of the parts of that link. A video ID can
- * be extracted from this. Adapted from:
- * https://stackoverflow.com/questions/3452546/how-do-i-get-the-youtube-video-id-from-a-url
- */
-export const youtubeLinkMatcher = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
+import { YOUTUBE_URL_PATTERN } from '../../Utils';
 
 /**
  * Retrieves a YouTube video ID from a YouTube link.
@@ -17,7 +10,7 @@ export const youtubeLinkMatcher = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(
  * @returns the video ID contained within the url.
  */
 export function youtubeVideoIDFromURL(url: string): string {
-  return youtubeLinkMatcher.exec(url)?.[3] ?? '';
+  return YOUTUBE_URL_PATTERN.exec(url)?.[3] ?? '';
 }
 
 type VideoStatusChangedFunction = (a: VideoStatus) => boolean;

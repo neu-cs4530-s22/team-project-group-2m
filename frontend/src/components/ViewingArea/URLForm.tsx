@@ -1,16 +1,24 @@
-import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import {
-  Button,
-  Input,
-  FormLabel,
-} from "@chakra-ui/react";
+import React, { useState, useCallback } from "react";
+import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
+import { validURL } from "../../Utils";
 
-const FORM_LABEL_TEXT = "Enter Video Link Below"
-const PLACEHOLDER_STR = "Example: https://www.youtube.com/..."
-const COLOR_SCHEME_STR = "green"
-const BUTTON_TYPE_STR = "submit"
-const BUTTON_TEXT = "Submit"
+const FORM_LABEL_TEXT = "Enter a link to a video you would like to watch"
+const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try again"
+const EXAMPLE_INPUT = "Example: https://www.youtube.com/..."
+
+/**
+ * Performs some action with a given url
+ */
+export type OnURLUpdated = (url: string) => void;
+
+/**
+ * Represents props required to pass to URLForm
+ */
+export type URLFormProps = {
+  onURLUpdated: OnURLUpdated;
+  /** a regular expression which accepts strings in the form of video links * */
+  regExpPattern: RegExp;
+}
 
 /**
  * Displays a form which a users can input and submit text in the form of a url
@@ -19,23 +27,49 @@ const BUTTON_TEXT = "Submit"
  * 
  * Form is labeled with instructions "Enter Video Link Below", submit button is labeled "Submit"
  * 
+ * @param props - URLProps
+ * 
  */
-export default function URLForm() {
+export default function URLForm(props: URLFormProps): JSX.Element {
 
-  // TODO: Possibly replace useForm with a custom useContext wrapper, similar to other hooks
-  const { handleSubmit } = useForm();
-  // TODO: handling onSubmit
-  const onSubmit = async (data: SubmitHandler<any>) => { console.log(data); };
+  const [url, setURL] = useState<string>('');
+  const toast = useToast();
+
+  const handleSubmit = useCallback(async () => {
+    const { onURLUpdated, regExpPattern } = props;
+    if (validURL(url, regExpPattern)) {
+      onURLUpdated(url);
+    } else {
+      toast({
+        title: INVALID_URL_MESSAGE,
+        status: 'error',
+      });
+    }
+  }, [props, url, toast]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormLabel>
-        {FORM_LABEL_TEXT}
-      </FormLabel>
-      <Input placeholder={PLACEHOLDER_STR}/>
-      <Button colorScheme={COLOR_SCHEME_STR} type={BUTTON_TYPE_STR}>
-        {BUTTON_TEXT}
-      </Button>
+    <form
+      onSubmit={ev => {
+        ev.preventDefault();
+        handleSubmit();
+      }}>
+      <ModalBody pb={6}>
+        <FormControl>
+          <FormLabel htmlFor='url'>{FORM_LABEL_TEXT}</FormLabel>
+          <Input
+            id='url'
+            placeholder={EXAMPLE_INPUT}
+            name='url'
+            value={url}
+            onChange={(e) => setURL(e.target.value)}
+          />
+        </FormControl>
+      </ModalBody>
+      <ModalFooter>
+        <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
+          Submit
+        </Button>
+      </ModalFooter>
     </form>
   );
 }
