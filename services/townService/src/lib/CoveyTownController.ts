@@ -6,7 +6,7 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
-import validURL, { YOUTUBE_URL_PATTERN } from '../Utils';
+import { validURL, YOUTUBE_URL_PATTERN } from '../Utils';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -222,26 +222,13 @@ export default class CoveyTownController {
    * @returns true if updated successfully
    */
   updateVideoStatus(newVideoStatus: VideoStatus): boolean {
-    if (!CoveyTownController.validVideoStatus(newVideoStatus)) {
-      return false
+    // HARD CODED RegExp Pattern: A YouTube video is the only video that is currently supported
+    if (!validURL(newVideoStatus.url, YOUTUBE_URL_PATTERN) &&
+       !this.validElapsed(videoStatus.elapsed, videoStatus.length)) {
+      return false;
     }
     this._videoStatus = newVideoStatus;
     return true;
-  }
-
-   /**
-   * Checks if the given timestamp in seconds is valid for the given video
-   * @param elapsed - how far you are into the video in seconds
-   * @param length - total length of video in seconds
-   * @returns true if the elapsed time is not greater than the video length
-   */
-  static validVideoStatus(videoStatus: VideoStatus): boolean {
-    // TODO: Validate other two VideoStatus field here
-    return validURL(videoStatus.url) && this.validElapsed(videoStatus.elapsed, videoStatus.length);
-  }
-
-  static validElapsed(elapsed: number, length: number): boolean {
-    return elapsed <= length;
   }
 
   /**
