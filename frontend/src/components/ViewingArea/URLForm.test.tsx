@@ -1,4 +1,4 @@
-import { validURL, YOUTUBE_URL_PATTERN } from './URLForm';
+import { validURL, YOUTUBE_URL_PATTERN } from "../../Utils";
 
 describe('URLForm', () => {
   describe('YouTube', () => {

@@ -224,7 +224,7 @@ export default class CoveyTownController {
   updateVideoStatus(newVideoStatus: VideoStatus): boolean {
     // HARD CODED RegExp Pattern: A YouTube video is the only video that is currently supported
     if (!validURL(newVideoStatus.url, YOUTUBE_URL_PATTERN)) {
-      return false
+      return false;
     }
     this._videoStatus = newVideoStatus;
     return true;

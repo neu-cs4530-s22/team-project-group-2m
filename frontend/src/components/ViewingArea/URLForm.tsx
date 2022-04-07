@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
+import { validURL } from "../../Utils";
 
-export const YOUTUBE_URL_PATTERN = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/gm;
 const FORM_LABEL_TEXT = "Enter a link to a video you would like to watch"
 const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try again"
 const EXAMPLE_INPUT = "Example: https://www.youtube.com/..."
@@ -18,16 +18,6 @@ export type URLFormProps = {
   onURLUpdated: OnURLUpdated;
   /** a regular expression which accepts strings in the form of video links * */
   regExpPattern: RegExp;
-}
-
-/**
-   * Validates whether a given url is a url to a publicly available video streaming website
-   * @param url - a publicly accessible web address
-   * @param regExpPattern - a regular expression which accepts strings in the form of video links
-   * @returns - a valid url or undefined
-   */
- export function validURL(url: string, pattern: RegExp): boolean {
-  return url.match(pattern) != null;
 }
 
 /**
