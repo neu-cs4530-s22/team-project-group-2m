@@ -57,28 +57,29 @@ export default function URLForm(props: URLFormProps): JSX.Element {
     }
   }, [props, url, toast]);
 
-  return (<form
-            onSubmit={ev => {
-              ev.preventDefault();
-              handleSubmit();
-            }}>
-            <ModalBody pb={6}>
-              <FormControl>
-                <FormLabel htmlFor='url'>{FORM_LABEL_TEXT}</FormLabel>
-                <Input
-                  id='url'
-                  placeholder={EXAMPLE_INPUT}
-                  name='url'
-                  value={url}
-                  onChange={(e) => setURL(e.target.value)}
-                />
-              </FormControl>
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
-                Submit
-              </Button>
-            </ModalFooter>
-          </form>
-  )
+  return (
+    <form
+      onSubmit={ev => {
+        ev.preventDefault();
+        handleSubmit();
+      }}>
+      <ModalBody pb={6}>
+        <FormControl>
+          <FormLabel htmlFor='url'>{FORM_LABEL_TEXT}</FormLabel>
+          <Input
+            id='url'
+            placeholder={EXAMPLE_INPUT}
+            name='url'
+            value={url}
+            onChange={(e) => setURL(e.target.value)}
+          />
+        </FormControl>
+      </ModalBody>
+      <ModalFooter>
+        <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
+          Submit
+        </Button>
+      </ModalFooter>
+    </form>
+  );
 }
