@@ -35,6 +35,7 @@ export default function ProgressBar(
     <Slider
       aria-label='progress-bar'
       value={sliderValue}
+      colorScheme='red'
       onChange={(percentage) => {
         const seconds = (percentage * videoLengthSeconds) / 100;
         onTimeChange(seconds);
