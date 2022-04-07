@@ -6,9 +6,15 @@ import {
   SliderThumb,
 } from '@chakra-ui/react'
 
+/**
+ * ProgressBarProps represents the props required for a ProgressBar.
+ */
 type ProgressBarProps = {
+  /** Represents the number of seconds that have elapsed since the video began. */
   secondsElapsed: number;
+  /** Represents the length of the video, in seconds. */
   videoLengthSeconds: number;
+  /** A function to be called upon the time being changed by clicking or seeking on the slider. */
   onTimeChange: (seconds: number) => void;
 };
 
