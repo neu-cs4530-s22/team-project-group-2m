@@ -25,7 +25,7 @@ export const YOUTUBE_URL_PATTERN = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)
    * Validates whether a given url is a url to a publicly available video streaming website
    * @param url - a publicly accessible web address
    * @param regExpPattern - a regular expression which accepts strings in the form of video links
-   * @returns - a valid url or undefined
+   * @returns - whether the url is valid or not
    */
 export function validURL(url: string, pattern: RegExp): boolean {
   return !!url.match(pattern);
