@@ -1,17 +1,29 @@
 import React from 'react';
-import { Button } from '@chakra-ui/button';
+import { Button } from '@chakra-ui/react';
+
+type PlayPauseButtonProps = {
+  /**
+   * Sets the state of the video
+   */
+  isPlaying: boolean;
+  /**
+   * Play or pauses the video when clicking.
+   */
+  onClick: () => void;
+}
 
 /**
- * Represents a function for Play and Pause button
- * @param isPlaying sets the state of the video
- * @param onClick play or pauses the video when clicking
- * @returns returns a render of the play pause button
+ * Represents a function for a Play and Pause button.
+ * @param props the props for this PlayPauseButton.
+ * @returns returns a PlayPauseButton component.
  */
-export default function playPause(isPlaying: boolean, onClick: Function) {
+export default function PlayPauseButton(
+  { isPlaying, onClick }: PlayPauseButtonProps,
+): JSX.Element {
 
-    return (
-        <Button onClick={() => onClick()}>
-            {isPlaying ? 'Pause' : 'Play'}!
-        </Button>
-    );
+  return (
+    <Button onClick={onClick}>
+        {isPlaying ? 'Pause' : 'Play'}!
+    </Button>
+  );
 }

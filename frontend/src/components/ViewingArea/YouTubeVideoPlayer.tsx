@@ -21,29 +21,38 @@ type VideoStatusChangedFunction = (a: VideoStatus) => boolean;
  */
 export class YouTubeVideoPlayer implements VideoPlayer {
 
-  private videoStatus: VideoStatus;
+  private videoStatus: VideoStatus | undefined;
 
   // TODO: when implemented
   private onVideoStatusChanged: VideoStatusChangedFunction;
 
-  constructor(videoStatus: VideoStatus, onVideoStatusChanged: VideoStatusChangedFunction) {
+  constructor(videoStatus: VideoStatus | undefined, onVideoStatusChanged: VideoStatusChangedFunction) {
     this.videoStatus = videoStatus;
     this.onVideoStatusChanged = onVideoStatusChanged;
   }
 
   setURL(url: string): boolean {
-    this.videoStatus.url = url;
-    return this.onVideoStatusChanged({ ...this.videoStatus, url });
+    if (this.videoStatus) {
+      this.videoStatus.url = url;
+      return this.onVideoStatusChanged({ ...this.videoStatus, url });
+    }
+    return false;
   }
 
   setElapsed(elapsed: number): boolean {
-    this.videoStatus.elapsed = elapsed;
-    return this.onVideoStatusChanged({ ...this.videoStatus, elapsed });
+    if (this.videoStatus) {
+      this.videoStatus.elapsed = elapsed;
+      return this.onVideoStatusChanged({ ...this.videoStatus, elapsed });
+    }
+    return false;
   }
 
   setIsPaused(isPaused: boolean): boolean {
-    this.videoStatus.isPaused = isPaused;
-    return this.onVideoStatusChanged({ ...this.videoStatus, isPaused });
+    if (this.videoStatus) {
+      this.videoStatus.isPaused = isPaused;
+      return this.onVideoStatusChanged({ ...this.videoStatus, isPaused });
+    }
+    return false;
   }
 
   /**
@@ -53,25 +62,30 @@ export class YouTubeVideoPlayer implements VideoPlayer {
    * and disabling autoplay.
    */
   private queryParams(): string {
-    let params = `start=${this.videoStatus.elapsed}`;
-    // disable the embed controls
-    params += '&controls=0';
-    // disable autoplay
-    params += 'autoplay=1';
-    // remove the large YouTube logo
-    params += 'modestbranding=1';
-    return params;
+    if (this.videoStatus) {
+      let params = `start=${this.videoStatus.elapsed}`;
+      // disable the embed controls
+      params += '&controls=0';
+      // disable autoplay
+      params += 'autoplay=1';
+      // remove the large YouTube logo
+      params += 'modestbranding=1';
+      return params;
+    }
+    return '';
   }
 
   videoComponent(): JSX.Element {
-    // TODO: add url, progress bar, and play/pause button when implemented
-    return (
-      <LiteYouTubeEmbed
-        id={youtubeVideoIDFromURL(this.videoStatus.url)}
-        title={this.videoStatus.url}
-        params={this.queryParams()}
-      />
-    );
+    if (this.videoStatus) {
+      return (
+        <LiteYouTubeEmbed
+          id={youtubeVideoIDFromURL(this.videoStatus.url)}
+          title={this.videoStatus.url}
+          params={this.queryParams()}
+        />
+      );
+    }
+    return <></>;
   }
 
 }
