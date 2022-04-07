@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
 import { validURL } from "../../Utils";
+import useCoveyAppState from '../../hooks/useCoveyAppState';
+import { VideoStatus } from "../../CoveyTypes";
 
 const FORM_LABEL_TEXT = "Enter a link to a video you would like to watch"
 const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try again"
@@ -33,19 +35,48 @@ export type URLFormProps = {
 export default function URLForm(props: URLFormProps): JSX.Element {
 
   const [url, setURL] = useState<string>('');
+  const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
   const toast = useToast();
+
+  // TODO fetch video length
+  // const fetchVideoLength = useCallback(async () => {
+  //   const videoLength = await getVideoDurationInSeconds(url).then((duration: number) => duration);
+  //   if (!videoLength) {
+  //     throw new Error(`Failed to fetch video length for video ${url}`);
+  //   }
+  //   return videoLength;
+  // }, [url]);
 
   const handleSubmit = useCallback(async () => {
     const { onURLUpdated, regExpPattern } = props;
     if (validURL(url, regExpPattern)) {
       onURLUpdated(url);
+      try {
+        // const videoLength = await fetchVideoLength();
+        const videoStatusToCreate: VideoStatus = { url, length: -1, elapsed: 0, isPaused: false };
+        await apiClient.createVideoStatus({
+          sessionToken,
+          coveyTownID: currentTownID,
+          videoStatus: videoStatusToCreate,
+        });
+        toast({
+          title: 'Video will begin shortly!',
+          status: 'success',
+        });
+      } catch (error) {
+        toast({
+          title: 'Unable to start video',
+          description: error.toString(),
+          status: 'error',
+        });
+      }
     } else {
       toast({
         title: INVALID_URL_MESSAGE,
         status: 'error',
       });
     }
-  }, [props, url, toast]);
+  }, [props, url, apiClient, sessionToken, currentTownID, toast]);
 
   return (
     <form
