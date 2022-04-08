@@ -2,7 +2,6 @@ import React from 'react';
 import LiteYouTubeEmbed from 'react-lite-youtube-embed';
 import { VideoStatus } from '../../CoveyTypes';
 import VideoPlayer from "./VideoPlayer";
-import { YOUTUBE_URL_PATTERN } from '../../Utils';
 
 /**
  * Retrieves a YouTube video ID from a YouTube link.
@@ -10,7 +9,8 @@ import { YOUTUBE_URL_PATTERN } from '../../Utils';
  * @returns the video ID contained within the url.
  */
 export function youtubeVideoIDFromURL(url: string): string {
-  return YOUTUBE_URL_PATTERN.exec(url)?.[3] ?? '';
+  const regex = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
+  return regex.exec(url)?.[3] ?? '';
 }
 
 type VideoStatusChangedFunction = (a: VideoStatus) => boolean;
@@ -63,13 +63,18 @@ export class YouTubeVideoPlayer implements VideoPlayer {
    */
   private queryParams(): string {
     if (this.videoStatus) {
-      let params = `start=${this.videoStatus.elapsed}`;
+      let params = `start=${Math.floor(this.videoStatus.elapsed)}`;
+      if (this.videoStatus.isPaused) {
+        params += '&autoplay=1';
+      } else {
+        params += '&autoplay=0';
+      }
       // disable the embed controls
       params += '&controls=0';
-      // disable autoplay
-      params += 'autoplay=1';
       // remove the large YouTube logo
-      params += 'modestbranding=1';
+      params += '&modestbranding=1';
+      // disable keyboard controls
+      params += '&disablekb=1';
       return params;
     }
     return '';
@@ -78,11 +83,13 @@ export class YouTubeVideoPlayer implements VideoPlayer {
   videoComponent(): JSX.Element {
     if (this.videoStatus) {
       return (
-        <LiteYouTubeEmbed
-          id={youtubeVideoIDFromURL(this.videoStatus.url)}
-          title={this.videoStatus.url}
-          params={this.queryParams()}
-        />
+        <div>
+          <LiteYouTubeEmbed
+            id={youtubeVideoIDFromURL(this.videoStatus.url)}
+            title={this.videoStatus.url}
+            params={this.queryParams()}
+          />
+        </div>
       );
     }
     return <></>;

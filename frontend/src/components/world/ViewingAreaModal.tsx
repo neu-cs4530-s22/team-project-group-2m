@@ -39,7 +39,9 @@ export default function ViewingAreaModal(
       onClose={() => {
         closeModal();
         video?.unPauseGame();
-      }}>
+      }}
+      size='3xl'
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Empty Modal</ModalHeader>
@@ -48,7 +50,7 @@ export default function ViewingAreaModal(
           onURLUpdated={() => {}}
         />
         {videoPlayer.videoComponent()}
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
           <PlayPauseButton
             isPlaying={videoStatus?.isPaused ?? true}
             onClick={() => {
