@@ -249,7 +249,7 @@ describe('CoveyTownController', () => {
       expect(areas[0].boundingBox).toEqual(newConversationArea.boundingBox);
     });
   });
-  describe('validElapsed', () => {
+  describe('elapsedValid', () => {
     let elapsed: number;
     let length: number;
     it('should not allow elapsed to be negative', ()=>{
@@ -272,6 +272,12 @@ describe('CoveyTownController', () => {
       });
     it('should allow elapsed to be equal to length', ()=>{
       elapsed = 300;
+      length = 300;
+      const result = CoveyTownController.validElapsed(elapsed, length)
+      expect(result).toBe(true);
+      });
+    it('should allow elapsed to be zero', ()=>{
+      elapsed = 0;
       length = 300;
       const result = CoveyTownController.validElapsed(elapsed, length)
       expect(result).toBe(true);
