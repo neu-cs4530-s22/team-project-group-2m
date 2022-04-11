@@ -1,6 +1,10 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
 
+/**
+ * PlayPauseButtonProps represents the props to be passed
+ * to a PlayPauseButton.
+ */
 type PlayPauseButtonProps = {
   /**
    * Sets the state of the video

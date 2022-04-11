@@ -12,8 +12,12 @@ import URLForm from '../ViewingArea/URLForm';
 import ProgressBar from '../ViewingArea/ProgressBar';
 import PlayPauseButton from '../ViewingArea/PlayPauseButton';
 import { VideoStatus } from '../../CoveyTypes';
-       
-type NewViewingAreaModalProps = {
+
+/**
+ * ViewingAreaModalProps represents the props to be
+ * passed to a ViewingAreaModal.
+ */
+type ViewingAreaModalProps = {
   isOpen: boolean;
   videoStatus: VideoStatus | undefined;
   videoPlayer: VideoPlayer;
@@ -28,7 +32,7 @@ type NewViewingAreaModalProps = {
  * @returns a viewing area modal.
  */
 export default function ViewingAreaModal(
-  { isOpen, videoStatus, videoPlayer, videoLinkRegEx, closeModal } : NewViewingAreaModalProps,
+  { isOpen, videoStatus, videoPlayer, videoLinkRegEx, closeModal } : ViewingAreaModalProps,
 ): JSX.Element {
 
   const video = useMaybeVideo();
