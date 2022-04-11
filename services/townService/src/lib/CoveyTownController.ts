@@ -231,8 +231,14 @@ export default class CoveyTownController {
     return true;
   }
 
+  /**
+   * Updated this town controller's video status metadata with new video status
+   * @param elapsed - amount of time elapsed in video in seconds
+   * @param length - length of video in seconds
+   * @returns true if elapsed is non-negative and not greater than the video length
+   */
   static validElapsed(elapsed: number, length: number): boolean {
-    return elapsed <= length;
+    return elapsed >= 0 && elapsed <= length;
   }
 
   /**
