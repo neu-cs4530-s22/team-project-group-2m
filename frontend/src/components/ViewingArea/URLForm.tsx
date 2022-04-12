@@ -46,7 +46,7 @@ export type URLFormProps = {
 export default function URLForm(props: URLFormProps): JSX.Element {
 
   const [url, setURL] = useState<string>('');
-  const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
+  const { apiClient, sessionToken, currentTownID } = useCoveyAppState();
   const toast = useToast();
 
   const handleSubmit = useCallback(async () => {
