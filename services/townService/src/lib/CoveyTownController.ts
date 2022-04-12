@@ -223,11 +223,22 @@ export default class CoveyTownController {
    */
   updateVideoStatus(newVideoStatus: VideoStatus): boolean {
     // HARD CODED RegExp Pattern: A YouTube video is the only video that is currently supported
-    if (!validURL(newVideoStatus.url, YOUTUBE_URL_PATTERN)) {
+    if (!validURL(newVideoStatus.url, YOUTUBE_URL_PATTERN) &&
+       !CoveyTownController.validElapsed(newVideoStatus.elapsed, newVideoStatus.length)) {
       return false;
     }
     this._videoStatus = newVideoStatus;
     return true;
+  }
+
+  /**
+   * Updated this town controller's video status metadata with new video status
+   * @param elapsed - amount of time elapsed in video in seconds
+   * @param length - length of video in seconds
+   * @returns true if elapsed is non-negative and not greater than the video length
+   */
+  static validElapsed(elapsed: number, length: number): boolean {
+    return elapsed >= 0 && elapsed <= length;
   }
 
   /**

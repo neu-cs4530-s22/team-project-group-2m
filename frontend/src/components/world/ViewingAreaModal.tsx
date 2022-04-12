@@ -7,10 +7,22 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
-       
-type NewViewingAreaModalProps = {
+import VideoPlayer from '../ViewingArea/VideoPlayer';
+import URLForm from '../ViewingArea/URLForm';
+import ProgressBar from '../ViewingArea/ProgressBar';
+import PlayPauseButton from '../ViewingArea/PlayPauseButton';
+import { VideoStatus } from '../../CoveyTypes';
+
+/**
+ * ViewingAreaModalProps represents the props to be
+ * passed to a ViewingAreaModal.
+ */
+type ViewingAreaModalProps = {
   isOpen: boolean;
-  closeModal: ()=>void;
+  videoStatus: VideoStatus | undefined;
+  videoPlayer: VideoPlayer;
+  videoLinkRegEx: RegExp;
+  closeModal: () => void;
 }
 
 /**
@@ -19,13 +31,46 @@ type NewViewingAreaModalProps = {
  * @param props the props for a viewing area modal.
  * @returns a viewing area modal.
  */
-export default function ViewingAreaModal( {isOpen, closeModal} : NewViewingAreaModalProps): JSX.Element {
-  const video = useMaybeVideo()
+export default function ViewingAreaModal(
+  { isOpen, videoStatus, videoPlayer, videoLinkRegEx, closeModal } : ViewingAreaModalProps,
+): JSX.Element {
+
+  const video = useMaybeVideo();
+
   return (
-    <Modal isOpen={isOpen} onClose={()=>{closeModal(); video?.unPauseGame()}}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        closeModal();
+        video?.unPauseGame();
+      }}
+      size='3xl'
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Empty Modal</ModalHeader>
+        <URLForm
+          regExpPattern={videoLinkRegEx}
+          onURLUpdated={() => {}}
+        />
+        {videoPlayer.videoComponent()}
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <PlayPauseButton
+            isPlaying={videoStatus?.isPaused ?? true}
+            onClick={() => {
+              if (videoStatus) {
+                videoPlayer.setIsPaused(!videoStatus.isPaused);
+              }
+            }}
+          />
+          {videoStatus && (
+            <ProgressBar
+              secondsElapsed={videoStatus.elapsed}
+              videoLengthSeconds={videoStatus.length}
+              onTimeChange={(newSeconds) => videoPlayer.setElapsed(newSeconds)}
+            />
+          )}
+        </div>
         <ModalCloseButton />
       </ModalContent>
     </Modal>
