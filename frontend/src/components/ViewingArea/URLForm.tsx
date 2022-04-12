@@ -1,5 +1,14 @@
 import React, { useState, useCallback } from "react";
-import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
+import {
+  FormLabel,
+  FormControl,
+  Input,
+  Button,
+  ModalBody,
+  useToast,
+  InputGroup,
+  InputRightElement
+} from "@chakra-ui/react"
 import { validURL, VideoStatus } from "../../Utils";
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
@@ -80,6 +89,7 @@ export default function URLForm(props: URLFormProps): JSX.Element {
       <ModalBody pb={6}>
         <FormControl>
           <FormLabel htmlFor='url'>{FORM_LABEL_TEXT}</FormLabel>
+          <InputGroup size='md'>
           <Input
             id='url'
             placeholder={EXAMPLE_INPUT}
@@ -87,13 +97,14 @@ export default function URLForm(props: URLFormProps): JSX.Element {
             value={url}
             onChange={(e) => setURL(e.target.value)}
           />
+          <InputRightElement width='5.5rem'>
+          <Button colorScheme='blue' h='1.75rem' size='sm' onClick={handleSubmit}>
+            Submit
+          </Button>
+          </InputRightElement>
+          </InputGroup>
         </FormControl>
       </ModalBody>
-      <ModalFooter>
-        <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
-          Submit
-        </Button>
-      </ModalFooter>
     </form>
   );
 }
