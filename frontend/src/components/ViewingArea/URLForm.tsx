@@ -1,6 +1,17 @@
 import React, { useState, useCallback } from "react";
-import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
-import { validURL } from "../../Utils";
+import {
+  FormLabel,
+  FormControl,
+  Input,
+  Button,
+  ModalBody,
+  useToast,
+  InputGroup,
+  InputRightElement
+} from "@chakra-ui/react"
+import { validURL, VideoStatus } from "../../Utils";
+import useCoveyAppState from '../../hooks/useCoveyAppState';
+
 
 const FORM_LABEL_TEXT = "Enter a link to a video you would like to watch"
 const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try again"
@@ -18,6 +29,8 @@ export type URLFormProps = {
   onURLUpdated: OnURLUpdated;
   /** a regular expression which accepts strings in the form of video links * */
   regExpPattern: RegExp;
+  /** fetches the duration of a video from a given url */
+  fetchVideoDuration: (url: string) => Promise<number>;
 }
 
 /**
@@ -33,19 +46,39 @@ export type URLFormProps = {
 export default function URLForm(props: URLFormProps): JSX.Element {
 
   const [url, setURL] = useState<string>('');
+  const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
   const toast = useToast();
 
   const handleSubmit = useCallback(async () => {
-    const { onURLUpdated, regExpPattern } = props;
+    const { onURLUpdated, regExpPattern, fetchVideoDuration } = props;
     if (validURL(url, regExpPattern)) {
       onURLUpdated(url);
+      try {
+        const videoDuration = await fetchVideoDuration(url);
+        const videoStatusToCreate: VideoStatus = { url, length: videoDuration, elapsed: 0, isPaused: false };
+        await apiClient.createVideoStatus({
+          sessionToken,
+          coveyTownID: currentTownID,
+          videoStatus: videoStatusToCreate,
+        });
+        toast({
+          title: 'Video will begin shortly!',
+          status: 'success',
+        });
+      } catch (err) {
+        toast({
+          title: 'Unable to start video',
+          description: err.toString(),
+          status: 'error',
+        });
+      }
     } else {
       toast({
         title: INVALID_URL_MESSAGE,
         status: 'error',
       });
     }
-  }, [props, url, toast]);
+  }, [props, url, apiClient, sessionToken, currentTownID, toast]);
 
   return (
     <form
@@ -56,6 +89,7 @@ export default function URLForm(props: URLFormProps): JSX.Element {
       <ModalBody pb={6}>
         <FormControl>
           <FormLabel htmlFor='url'>{FORM_LABEL_TEXT}</FormLabel>
+          <InputGroup size='md'>
           <Input
             id='url'
             placeholder={EXAMPLE_INPUT}
@@ -63,13 +97,14 @@ export default function URLForm(props: URLFormProps): JSX.Element {
             value={url}
             onChange={(e) => setURL(e.target.value)}
           />
+          <InputRightElement width='5.5rem'>
+          <Button colorScheme='blue' h='1.75rem' size='sm' onClick={handleSubmit}>
+            Submit
+          </Button>
+          </InputRightElement>
+          </InputGroup>
         </FormControl>
       </ModalBody>
-      <ModalFooter>
-        <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
-          Submit
-        </Button>
-      </ModalFooter>
     </form>
   );
 }

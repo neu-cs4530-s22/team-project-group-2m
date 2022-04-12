@@ -1,6 +1,6 @@
 import React from 'react';
 import LiteYouTubeEmbed from 'react-lite-youtube-embed';
-import { VideoStatus } from '../../CoveyTypes';
+import { VideoStatus } from '../../Utils';
 import VideoPlayer from "./VideoPlayer";
 
 /**

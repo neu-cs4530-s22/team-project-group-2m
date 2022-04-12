@@ -11,7 +11,7 @@ import VideoPlayer from '../ViewingArea/VideoPlayer';
 import URLForm from '../ViewingArea/URLForm';
 import ProgressBar from '../ViewingArea/ProgressBar';
 import PlayPauseButton from '../ViewingArea/PlayPauseButton';
-import { VideoStatus } from '../../CoveyTypes';
+import { VideoStatus, fetchYoutubeVideoDuration } from '../../Utils';
 
 /**
  * ViewingAreaModalProps represents the props to be
@@ -52,6 +52,7 @@ export default function ViewingAreaModal(
         <URLForm
           regExpPattern={videoLinkRegEx}
           onURLUpdated={() => {}}
+          fetchVideoDuration={fetchYoutubeVideoDuration}
         />
         {videoPlayer.videoComponent()}
         <div style={{ display: 'flex', flexDirection: 'row' }}>

@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ServerPlayer } from './Player';
 import { ServerConversationArea } from './ConversationArea';
+import { VideoStatus } from '../Utils';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -86,6 +87,15 @@ export interface ConversationCreateRequest {
 }
 
 /**
+ * Payload sent by the client to update a VideoStatus
+ */
+export interface VideoStatusCreateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  videoStatus: VideoStatus;
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
@@ -153,6 +163,11 @@ export default class TownsServiceClient {
   
   async createConversation(requestData: ConversationCreateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async createVideoStatus(requestData: VideoStatusCreateRequest) : Promise<void>{
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/videoStatus`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
