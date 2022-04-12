@@ -869,6 +869,7 @@ export default function WorldMap(): JSX.Element {
           closeModal={() => {
             setNewViewingArea(undefined);
           }}
+          setVideoStatus={setVideoStatus}
         />
       );
     }

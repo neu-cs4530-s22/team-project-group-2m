@@ -23,6 +23,7 @@ type ViewingAreaModalProps = {
   videoPlayer: VideoPlayer;
   videoLinkRegEx: RegExp;
   closeModal: () => void;
+  setVideoStatus: (videoStatus: VideoStatus | undefined) => void;
 }
 
 /**
@@ -32,7 +33,7 @@ type ViewingAreaModalProps = {
  * @returns a viewing area modal.
  */
 export default function ViewingAreaModal(
-  { isOpen, videoStatus, videoPlayer, videoLinkRegEx, closeModal } : ViewingAreaModalProps,
+  { isOpen, videoStatus, videoPlayer, videoLinkRegEx, closeModal, setVideoStatus } : ViewingAreaModalProps,
 ): JSX.Element {
 
   const video = useMaybeVideo();
@@ -51,7 +52,7 @@ export default function ViewingAreaModal(
         <ModalHeader>Empty Modal</ModalHeader>
         <URLForm
           regExpPattern={videoLinkRegEx}
-          onURLUpdated={() => {}}
+          onVideoStatusCreated={newVideoStatus => setVideoStatus(newVideoStatus)}
           fetchVideoDuration={fetchYoutubeVideoDuration}
         />
         {videoPlayer.videoComponent()}
