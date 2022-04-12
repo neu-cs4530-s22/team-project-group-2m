@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
-import { VideoStatus } from '../../CoveyTypes';
-import { YOUTUBE_URL_PATTERN } from '../../Utils';
+import { VideoStatus, YOUTUBE_URL_PATTERN } from '../../Utils';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';

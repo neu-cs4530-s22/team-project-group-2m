@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
-import { validURL, fetchVideoDuration } from "../../Utils";
+import { validURL, VideoStatus } from "../../Utils";
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import { VideoStatus } from "../../CoveyTypes";
+
 
 const FORM_LABEL_TEXT = "Enter a link to a video you would like to watch"
 const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try again"
@@ -20,6 +20,8 @@ export type URLFormProps = {
   onURLUpdated: OnURLUpdated;
   /** a regular expression which accepts strings in the form of video links * */
   regExpPattern: RegExp;
+  /** fetches the duration of a video from a given url */
+  fetchVideoDuration: (url: string) => Promise<number>;
 }
 
 /**
@@ -39,7 +41,7 @@ export default function URLForm(props: URLFormProps): JSX.Element {
   const toast = useToast();
 
   const handleSubmit = useCallback(async () => {
-    const { onURLUpdated, regExpPattern } = props;
+    const { onURLUpdated, regExpPattern, fetchVideoDuration } = props;
     if (validURL(url, regExpPattern)) {
       onURLUpdated(url);
       try {
