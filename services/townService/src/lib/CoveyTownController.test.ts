@@ -253,35 +253,35 @@ describe('CoveyTownController', () => {
     let elapsed: number;
     let length: number;
     it('should not allow elapsed to be negative', ()=>{
-    elapsed = -10;
-    length = 300;
-    const result = CoveyTownController.validElapsed(elapsed, length)
-    expect(result).toBe(false);
+      elapsed = -10;
+      length = 300;
+      const result = CoveyTownController.validElapsed(elapsed, length);
+      expect(result).toBe(false);
     });
     it('should not allow elapsed to be greater than length', ()=>{
       elapsed = 500;
       length = 300;
-      const result = CoveyTownController.validElapsed(elapsed, length)
+      const result = CoveyTownController.validElapsed(elapsed, length);
       expect(result).toBe(false);
-      });
+    });
     it('should allow elapsed to be less than length', ()=>{
       elapsed = 100;
       length = 300;
-      const result = CoveyTownController.validElapsed(elapsed, length)
+      const result = CoveyTownController.validElapsed(elapsed, length);
       expect(result).toBe(true);
-      });
+    });
     it('should allow elapsed to be equal to length', ()=>{
       elapsed = 300;
       length = 300;
-      const result = CoveyTownController.validElapsed(elapsed, length)
+      const result = CoveyTownController.validElapsed(elapsed, length);
       expect(result).toBe(true);
-      });
+    });
     it('should allow elapsed to be zero', ()=>{
       elapsed = 0;
       length = 300;
-      const result = CoveyTownController.validElapsed(elapsed, length)
+      const result = CoveyTownController.validElapsed(elapsed, length);
       expect(result).toBe(true);
-      });
+    });
   });
   describe('updatePlayerLocation', () =>{
     let testingTown: CoveyTownController;
