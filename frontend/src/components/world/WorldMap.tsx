@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
+import { VideoStatus } from '../../CoveyTypes';
+import { YOUTUBE_URL_PATTERN } from '../../Utils';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
@@ -11,6 +13,7 @@ import usePlayerMovement from '../../hooks/usePlayerMovement';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
+import { YouTubeVideoPlayer } from '../ViewingArea/YouTubeVideoPlayer';
 import NewConversationModal from './NewCoversationModal';
 import ViewingAreaModal from './ViewingAreaModal'
 
@@ -762,6 +765,7 @@ export default function WorldMap(): JSX.Element {
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
   const [isViewingAreaModalOpen, setNewViewingArea] = useState<ViewingArea>();
+  const [videoStatus, setVideoStatus] = useState<VideoStatus | undefined>();
   const playerMovementCallbacks = usePlayerMovement();
   const players = usePlayersInTown();
 
@@ -850,6 +854,19 @@ export default function WorldMap(): JSX.Element {
       return (
         <ViewingAreaModal
           isOpen={isViewingAreaModalOpen !== undefined}
+          videoStatus={videoStatus}
+          videoPlayer={new YouTubeVideoPlayer(
+            videoStatus,
+            (newVideoStatus) => {
+              // TODO: call backend
+              const resultOfBackendCall = true;
+              if (resultOfBackendCall) {
+                setVideoStatus(newVideoStatus);
+              }
+              return true;
+            },
+          )}
+          videoLinkRegEx={YOUTUBE_URL_PATTERN}
           closeModal={() => {
             setNewViewingArea(undefined);
           }}
@@ -857,7 +874,7 @@ export default function WorldMap(): JSX.Element {
       );
     }
     return <></>;
-  }, [isViewingAreaModalOpen, setNewViewingArea]);
+  }, [videoStatus, isViewingAreaModalOpen, setNewViewingArea]);
 
   return (
     <div id='app-container'>
