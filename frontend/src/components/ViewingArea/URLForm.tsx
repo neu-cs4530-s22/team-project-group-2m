@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { FormLabel, FormControl, Input, Button, ModalBody, ModalFooter, useToast } from "@chakra-ui/react"
-import { validURL } from "../../Utils";
+import { validURL, fetchVideoDuration } from "../../Utils";
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import { VideoStatus } from "../../CoveyTypes";
 
@@ -38,22 +38,13 @@ export default function URLForm(props: URLFormProps): JSX.Element {
   const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
   const toast = useToast();
 
-  // TODO fetch video length
-  // const fetchVideoLength = useCallback(async () => {
-  //   const videoLength = await getVideoDurationInSeconds(url).then((duration: number) => duration);
-  //   if (!videoLength) {
-  //     throw new Error(`Failed to fetch video length for video ${url}`);
-  //   }
-  //   return videoLength;
-  // }, [url]);
-
   const handleSubmit = useCallback(async () => {
     const { onURLUpdated, regExpPattern } = props;
     if (validURL(url, regExpPattern)) {
       onURLUpdated(url);
       try {
-        // const videoLength = await fetchVideoLength();
-        const videoStatusToCreate: VideoStatus = { url, length: -1, elapsed: 0, isPaused: false };
+        const videoDuration = await fetchVideoDuration(url);
+        const videoStatusToCreate: VideoStatus = { url, length: videoDuration, elapsed: 0, isPaused: false };
         await apiClient.createVideoStatus({
           sessionToken,
           coveyTownID: currentTownID,
@@ -63,10 +54,10 @@ export default function URLForm(props: URLFormProps): JSX.Element {
           title: 'Video will begin shortly!',
           status: 'success',
         });
-      } catch (error) {
+      } catch (err) {
         toast({
           title: 'Unable to start video',
-          description: error.toString(),
+          description: err.toString(),
           status: 'error',
         });
       }
