@@ -4,56 +4,20 @@ import { VideoStatus } from '../../Utils';
 import VideoPlayer from "./VideoPlayer";
 
 /**
- * Retrieves a YouTube video ID from a YouTube link.
- * @param url - a YouTube URL.
- * @returns the video ID contained within the url.
- */
-export function youtubeVideoIDFromURL(url: string): string {
-  const regex = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
-  return regex.exec(url)?.[3] ?? '';
-}
-
-type VideoStatusChangedFunction = (a: VideoStatus) => boolean;
-
-/**
  * YouTubeVideoPlayer is a concrete implementation of a VideoPlayer
  * specifically meant to control and display videos from YouTube.
  */
-export class YouTubeVideoPlayer implements VideoPlayer {
+export default class YouTubeVideoPlayer implements VideoPlayer {
 
-  private videoStatus: VideoStatus | undefined;
+  videoIDRegex: RegExp;
 
-  // TODO: when implemented
-  private onVideoStatusChanged: VideoStatusChangedFunction;
-
-  constructor(videoStatus: VideoStatus | undefined, onVideoStatusChanged: VideoStatusChangedFunction) {
-    this.videoStatus = videoStatus;
-    this.onVideoStatusChanged = onVideoStatusChanged;
+  constructor(videoIDRegex: RegExp) {
+    this.videoIDRegex = videoIDRegex;
   }
 
-  setURL(url: string): boolean {
-    if (this.videoStatus) {
-      this.videoStatus.url = url;
-      return this.onVideoStatusChanged({ ...this.videoStatus, url });
-    }
-    return false;
-  }
-
-  setElapsed(elapsed: number): boolean {
-    if (this.videoStatus) {
-      this.videoStatus.elapsed = elapsed;
-      return this.onVideoStatusChanged({ ...this.videoStatus, elapsed });
-    }
-    return false;
-  }
-
-  setIsPaused(isPaused: boolean): boolean {
-    if (this.videoStatus) {
-      this.videoStatus.isPaused = isPaused;
-      return this.onVideoStatusChanged({ ...this.videoStatus, isPaused });
-    }
-    return false;
-  }
+  videoIDFromURL(url: string) {
+    return this.videoIDRegex.exec(url)?.[3] ?? '';
+  };
 
   /**
    * Generated the query parameters for the YouTube embed
@@ -61,33 +25,30 @@ export class YouTubeVideoPlayer implements VideoPlayer {
    * including the start time, hiding controls, hiding the YouTube logo,
    * and disabling autoplay.
    */
-  private queryParams(): string {
-    if (this.videoStatus) {
-      let params = `start=${Math.floor(this.videoStatus.elapsed)}`;
-      if (this.videoStatus.isPaused) {
-        params += '&autoplay=1';
-      } else {
-        params += '&autoplay=0';
-      }
-      // disable the embed controls
-      params += '&controls=0';
-      // remove the large YouTube logo
-      params += '&modestbranding=1';
-      // disable keyboard controls
-      params += '&disablekb=1';
-      return params;
+  private static queryParams(elapsed: number, isPaused: boolean): string {
+    let params = `start=${Math.floor(elapsed)}`;
+    if (isPaused) {
+      params += '&autoplay=1';
+    } else {
+      params += '&autoplay=0';
     }
-    return '';
+    // disable the embed controls
+    params += '&controls=0';
+    // remove the large YouTube logo
+    params += '&modestbranding=1';
+    // disable keyboard controls
+    params += '&disablekb=1';
+    return params;
   }
 
-  videoComponent(): JSX.Element {
-    if (this.videoStatus) {
+  videoComponent(videoStatus: VideoStatus): JSX.Element {
+    if (videoStatus) {
       return (
         <div>
           <LiteYouTubeEmbed
-            id={youtubeVideoIDFromURL(this.videoStatus.url)}
-            title={this.videoStatus.url}
-            params={this.queryParams()}
+            id={this.videoIDFromURL(videoStatus.url)}
+            title={videoStatus.url}
+            params={YouTubeVideoPlayer.queryParams(videoStatus.elapsed, videoStatus.isPaused)}
           />
         </div>
       );

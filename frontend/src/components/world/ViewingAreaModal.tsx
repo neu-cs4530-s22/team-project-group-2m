@@ -23,6 +23,7 @@ type ViewingAreaModalProps = {
   videoPlayer: VideoPlayer;
   videoLinkRegEx: RegExp;
   closeModal: () => void;
+  setVideoStatus: (videoStatus: VideoStatus | undefined) => void;
 }
 
 /**
@@ -32,7 +33,7 @@ type ViewingAreaModalProps = {
  * @returns a viewing area modal.
  */
 export default function ViewingAreaModal(
-  { isOpen, videoStatus, videoPlayer, videoLinkRegEx, closeModal } : ViewingAreaModalProps,
+  { isOpen, videoStatus, videoPlayer, videoLinkRegEx, closeModal, setVideoStatus } : ViewingAreaModalProps,
 ): JSX.Element {
 
   const video = useMaybeVideo();
@@ -51,16 +52,16 @@ export default function ViewingAreaModal(
         <ModalHeader>Empty Modal</ModalHeader>
         <URLForm
           regExpPattern={videoLinkRegEx}
-          onURLUpdated={() => {}}
+          onVideoStatusCreated={newVideoStatus => setVideoStatus(newVideoStatus)}
           fetchVideoDuration={fetchYoutubeVideoDuration}
         />
-        {videoPlayer.videoComponent()}
+        {videoPlayer.videoComponent(videoStatus)}
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           <PlayPauseButton
             isPlaying={videoStatus?.isPaused ?? true}
             onClick={() => {
               if (videoStatus) {
-                videoPlayer.setIsPaused(!videoStatus.isPaused);
+                setVideoStatus({ ...videoStatus, isPaused: !videoStatus.isPaused });
               }
             }}
           />
@@ -68,7 +69,11 @@ export default function ViewingAreaModal(
             <ProgressBar
               secondsElapsed={videoStatus.elapsed}
               videoLengthSeconds={videoStatus.length}
-              onTimeChange={(newSeconds) => videoPlayer.setElapsed(newSeconds)}
+              onTimeChange={(newSeconds) => {
+                if (videoStatus) {
+                  setVideoStatus({ ...videoStatus, elapsed: newSeconds });
+                }
+              }}
             />
           )}
         </div>

@@ -12,7 +12,7 @@ import usePlayerMovement from '../../hooks/usePlayerMovement';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
-import { YouTubeVideoPlayer } from '../ViewingArea/YouTubeVideoPlayer';
+import YouTubeVideoPlayer from '../ViewingArea/YouTubeVideoPlayer';
 import NewConversationModal from './NewCoversationModal';
 import ViewingAreaModal from './ViewingAreaModal'
 
@@ -759,7 +759,13 @@ class CoveyGameScene extends Phaser.Scene {
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const { emitMovement, myPlayerID } = useCoveyAppState();
+  const {
+    emitMovement,
+    myPlayerID,
+    apiClient,
+    sessionToken,
+    currentTownID,
+  } = useCoveyAppState();
   const conversationAreas = useConversationAreas();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
@@ -855,19 +861,22 @@ export default function WorldMap(): JSX.Element {
           isOpen={isViewingAreaModalOpen !== undefined}
           videoStatus={videoStatus}
           videoPlayer={new YouTubeVideoPlayer(
-            videoStatus,
-            (newVideoStatus) => {
-              // TODO: call backend
-              const resultOfBackendCall = true;
-              if (resultOfBackendCall) {
-                setVideoStatus(newVideoStatus);
-              }
-              return true;
-            },
+            /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm,
           )}
           videoLinkRegEx={YOUTUBE_URL_PATTERN}
           closeModal={() => {
             setNewViewingArea(undefined);
+          }}
+          setVideoStatus={async (newStatus) => {
+            setVideoStatus(newStatus);
+            if (newStatus) {
+              // alert backend of the change in video status
+              await apiClient.createVideoStatus({
+                sessionToken,
+                coveyTownID: currentTownID,
+                videoStatus: newStatus,
+              });
+            }
           }}
         />
       );

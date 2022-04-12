@@ -18,15 +18,15 @@ const INVALID_URL_MESSAGE = "You entered an unsupported video link, please try a
 const EXAMPLE_INPUT = "Example: https://www.youtube.com/..."
 
 /**
- * Performs some action with a given url
+ * Performs some action with the newly created video status
  */
-export type OnURLUpdated = (url: string) => void;
+export type OnVideoStatusCreated = (videoStatus: VideoStatus) => void;
 
 /**
  * Represents props required to pass to URLForm
  */
 export type URLFormProps = {
-  onURLUpdated: OnURLUpdated;
+  onVideoStatusCreated: OnVideoStatusCreated;
   /** a regular expression which accepts strings in the form of video links * */
   regExpPattern: RegExp;
   /** fetches the duration of a video from a given url */
@@ -46,21 +46,26 @@ export type URLFormProps = {
 export default function URLForm(props: URLFormProps): JSX.Element {
 
   const [url, setURL] = useState<string>('');
-  const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
+  const { apiClient, sessionToken, currentTownID } = useCoveyAppState();
   const toast = useToast();
 
   const handleSubmit = useCallback(async () => {
-    const { onURLUpdated, regExpPattern, fetchVideoDuration } = props;
+    const { onVideoStatusCreated, regExpPattern, fetchVideoDuration } = props;
     if (validURL(url, regExpPattern)) {
-      onURLUpdated(url);
       try {
         const videoDuration = await fetchVideoDuration(url);
-        const videoStatusToCreate: VideoStatus = { url, length: videoDuration, elapsed: 0, isPaused: false };
+        const videoStatusToCreate: VideoStatus = {
+          url,
+          length: videoDuration,
+          elapsed: 0,
+          isPaused: false,
+        };
         await apiClient.createVideoStatus({
           sessionToken,
           coveyTownID: currentTownID,
           videoStatus: videoStatusToCreate,
         });
+        onVideoStatusCreated(videoStatusToCreate);
         toast({
           title: 'Video will begin shortly!',
           status: 'success',
