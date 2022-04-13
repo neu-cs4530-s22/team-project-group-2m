@@ -10,6 +10,7 @@ import {
   townSubscriptionHandler,
   townUpdateHandler,
   videoStatusUpdateHandler,
+  videoStatusGetHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -133,6 +134,23 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         coveyTownID: req.params.townID,
         sessionToken: req.body.sessionToken,
         videoStatus: req.body.videoStatus,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  app.get('/towns/:townID/videoStatus', express.json(), async (req, res) => {
+    try {
+      const result = videoStatusGetHandler({
+        coveyTownID: req.params.townID,
+        sessionToken: req.body.sessionToken,
       });
       res.status(StatusCodes.OK)
         .json(result);

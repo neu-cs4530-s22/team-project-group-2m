@@ -4,7 +4,8 @@ import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea, VideoStatusUpdateRequest } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ServerConversationArea, VideoStatusGetRequest, VideoStatusResponse, VideoStatusUpdateRequest } from '../client/TownsServiceClient';
+import { VideoStatus } from '../CoveyTypes';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -223,6 +224,23 @@ export function videoStatusUpdateHandler(_requestData: VideoStatusUpdateRequest)
   };
 }
 
+ export function videoStatusGetHandler(_requestData: VideoStatusGetRequest) : ResponseEnvelope<Record<string, null>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
+  if (!townController?.getSessionByToken(_requestData.sessionToken)){
+    return {
+      isOK: false, response: {}, message: `Unable to get video status`,
+    };
+  }
+  const success = townController.getVideoStatus();
+
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? `Failed to get video status` : undefined,
+  };
+}
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -246,6 +264,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
     onConversationAreaDestroyed(conversation: ServerConversationArea){
       socket.emit('conversationDestroyed', conversation);
+    },
+    onVideoStatusUpdated(videoStatus: VideoStatus){
+      socket.emit('videoStatusUpdated', videoStatus);
     },
     onConversationAreaUpdated(conversation: ServerConversationArea){
       socket.emit('conversationUpdated', conversation);

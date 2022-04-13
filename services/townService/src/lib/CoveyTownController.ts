@@ -84,7 +84,7 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
-  private _videoStatus?: VideoStatus;
+  private _videoStatus: VideoStatus | undefined;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
@@ -229,6 +229,10 @@ export default class CoveyTownController {
     }
     this._videoStatus = newVideoStatus;
     return true;
+  }
+
+  getVideoStatus(): boolean {
+    return !!this._videoStatus;
   }
 
   /**

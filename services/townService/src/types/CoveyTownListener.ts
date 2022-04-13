@@ -1,6 +1,7 @@
 import { ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage } from '../CoveyTypes';
 import Player from './Player';
+import { VideoStatus } from '../CoveyTypes';
 
 /**
  * A listener for player-related events in each town
@@ -46,4 +47,10 @@ export default interface CoveyTownListener {
    * @param message the new chat message
    */
   onChatMessage(message: ChatMessage): void;
+
+  /**
+   * 
+   * @param videoStatus the new video status
+   */
+  onVideoStatusUpdated(videoStatus: VideoStatus): void;
 }
