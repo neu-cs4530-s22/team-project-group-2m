@@ -9,10 +9,15 @@ import VideoPlayer from "./VideoPlayer";
  */
 export default class YouTubeVideoPlayer implements VideoPlayer {
 
+  playerID: string;
+
   videoIDRegex: RegExp;
 
-  constructor(videoIDRegex: RegExp) {
-    this.videoIDRegex = videoIDRegex;
+  playerReference: YT.Player | undefined;
+
+  constructor() {
+    this.playerID = 'youtubePlayer';
+    this.videoIDRegex = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
   }
 
   videoIDFromURL(url: string) {
@@ -25,30 +30,48 @@ export default class YouTubeVideoPlayer implements VideoPlayer {
    * including the start time, hiding controls, hiding the YouTube logo,
    * and disabling autoplay.
    */
-  private static queryParams(elapsed: number, isPaused: boolean): string {
+  private static queryParams(elapsed: number): string {
     let params = `start=${Math.floor(elapsed)}`;
-    if (isPaused) {
-      params += '&autoplay=1';
-    } else {
-      params += '&autoplay=0';
-    }
     // disable the embed controls
     params += '&controls=0';
     // remove the large YouTube logo
     params += '&modestbranding=1';
     // disable keyboard controls
     params += '&disablekb=1';
+    // enable pausing via exposed JavaScript functions
+    params += '&enablejsapi=1';
     return params;
   }
 
   videoComponent(videoStatus: VideoStatus): JSX.Element {
     if (videoStatus) {
+
+      // Inject YouTube API script, adapted from
+      // https://stackoverflow.com/questions/42496121/youtube-iframe-api-not-pausing-video
+      const tag = document.createElement('script');
+      tag.src = "//www.youtube.com/player_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
       return (
         <div>
           <LiteYouTubeEmbed
             id={this.videoIDFromURL(videoStatus.url)}
             title={videoStatus.url}
-            params={YouTubeVideoPlayer.queryParams(videoStatus.elapsed, videoStatus.isPaused)}
+            iframeClass={this.playerID}
+            onIframeAdded={() => {
+              setTimeout(() => {
+                const iframe = document.getElementsByClassName(this.playerID)[0];
+                if (iframe) {
+                  iframe.id = this.playerID;
+                }
+                this.playerReference = new YT.Player(this.playerID, {});
+                if (videoStatus.isPaused) {
+                  this.playerReference.pauseVideo();
+                }
+              }, 500);
+            }}
+            params={YouTubeVideoPlayer.queryParams(videoStatus.elapsed)}
           />
         </div>
       );
