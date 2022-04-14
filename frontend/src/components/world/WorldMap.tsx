@@ -856,6 +856,7 @@ export default function WorldMap(): JSX.Element {
 
   const newViewingAreaModal = useMemo(() => {
     if (isViewingAreaModalOpen) {
+      video?.pauseGame();
       return (
         <ViewingAreaModal
           isOpen={isViewingAreaModalOpen !== undefined}
@@ -865,13 +866,14 @@ export default function WorldMap(): JSX.Element {
           )}
           videoLinkRegEx={YOUTUBE_URL_PATTERN}
           closeModal={() => {
+            video?.unPauseGame();
             setNewViewingArea(undefined);
           }}
           setVideoStatus={async (newStatus) => {
             setVideoStatus(newStatus);
             if (newStatus) {
               // alert backend of the change in video status
-              await apiClient.createVideoStatus({
+              await apiClient.updateVideoStatus({
                 sessionToken,
                 coveyTownID: currentTownID,
                 videoStatus: newStatus,
