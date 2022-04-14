@@ -24,6 +24,7 @@
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@types/react-router-dom": "^5.1.3",
+    "@types/youtube": "^0.0.46",
     "assert": "^2.0.0",
     "axios": "^0.21.1",
     "concurrently": "^6.5.1",

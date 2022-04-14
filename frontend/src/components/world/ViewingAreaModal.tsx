@@ -58,7 +58,7 @@ export default function ViewingAreaModal(
         {videoPlayer.videoComponent(videoStatus)}
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           <PlayPauseButton
-            isPlaying={videoStatus?.isPaused ?? true}
+            isPlaying={!videoStatus?.isPaused ?? false}
             onClick={() => {
               if (videoStatus) {
                 setVideoStatus({ ...videoStatus, isPaused: !videoStatus.isPaused });
