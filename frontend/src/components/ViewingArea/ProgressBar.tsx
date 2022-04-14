@@ -44,8 +44,9 @@ export default function ProgressBar(
       colorScheme='red'
       maxWidth='650px'
       onChange={(percentage) => {
-        onTimeChange( (percentage * videoLengthSeconds) / 100);
-        onTimeChange( (percentage * videoLengthSeconds) / 100);
+        const seconds = (percentage * videoLengthSeconds) / 100;
+        onTimeChange(seconds);
+        onTimeChange(seconds);
       }}
     >
       <SliderTrack>
