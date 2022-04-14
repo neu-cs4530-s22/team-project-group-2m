@@ -757,6 +757,8 @@ class CoveyGameScene extends Phaser.Scene {
   }
 }
 
+const videoPlayer = new YouTubeVideoPlayer();
+
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
@@ -861,9 +863,7 @@ export default function WorldMap(): JSX.Element {
         <ViewingAreaModal
           isOpen={isViewingAreaModalOpen !== undefined}
           videoStatus={videoStatus}
-          videoPlayer={new YouTubeVideoPlayer(
-            /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm,
-          )}
+          videoPlayer={videoPlayer}
           videoLinkRegEx={YOUTUBE_URL_PATTERN}
           closeModal={() => {
             video?.unPauseGame();
@@ -884,7 +884,14 @@ export default function WorldMap(): JSX.Element {
       );
     }
     return <></>;
-  }, [videoStatus, isViewingAreaModalOpen, setNewViewingArea]);
+  }, [
+    apiClient,
+    currentTownID,
+    sessionToken,
+    videoStatus,
+    isViewingAreaModalOpen,
+    setNewViewingArea,
+  ]);
 
   return (
     <div id='app-container'>
