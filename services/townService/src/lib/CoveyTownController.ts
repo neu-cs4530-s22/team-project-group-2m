@@ -228,6 +228,7 @@ export default class CoveyTownController {
       return false;
     }
     this._videoStatus = newVideoStatus;
+    this._listeners.forEach(listener => listener.onVideoStatusUpdated(newVideoStatus));
     return true;
   }
 
