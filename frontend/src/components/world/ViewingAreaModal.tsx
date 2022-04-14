@@ -49,7 +49,7 @@ export default function ViewingAreaModal(
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Empty Modal</ModalHeader>
+        <ModalHeader>Watch Party</ModalHeader>
         <URLForm
           regExpPattern={videoLinkRegEx}
           onVideoStatusCreated={newVideoStatus => setVideoStatus(newVideoStatus)}
