@@ -232,10 +232,6 @@ export default class CoveyTownController {
     return true;
   }
 
-  getVideoStatus(): boolean {
-    return !!this._videoStatus;
-  }
-
   /**
    * Updated this town controller's video status metadata with new video status
    * @param elapsed - amount of time elapsed in video in seconds

@@ -1,11 +1,10 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
+import { ChatMessage, CoveyTownList, UserLocation, VideoStatus } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea, VideoStatusGetRequest, VideoStatusResponse, VideoStatusUpdateRequest } from '../client/TownsServiceClient';
-import { VideoStatus } from '../CoveyTypes';
+import { ConversationAreaCreateRequest, ServerConversationArea, VideoStatusUpdateRequest } from '../client/TownsServiceClient';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -221,23 +220,6 @@ export function videoStatusUpdateHandler(_requestData: VideoStatusUpdateRequest)
     isOK: success,
     response: {},
     message: !success ? `Failed to update video with url: ${_requestData.videoStatus.url} and time elapsed ${_requestData.videoStatus.elapsed}` : undefined,
-  };
-}
-
- export function videoStatusGetHandler(_requestData: VideoStatusGetRequest) : ResponseEnvelope<Record<string, null>> {
-  const townsStore = CoveyTownsStore.getInstance();
-  const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
-  if (!townController?.getSessionByToken(_requestData.sessionToken)){
-    return {
-      isOK: false, response: {}, message: `Unable to get video status`,
-    };
-  }
-  const success = townController.getVideoStatus();
-
-  return {
-    isOK: success,
-    response: {},
-    message: !success ? `Failed to get video status` : undefined,
   };
 }
 

@@ -1,7 +1,6 @@
 import { ServerConversationArea } from '../client/TownsServiceClient';
-import { ChatMessage } from '../CoveyTypes';
+import { ChatMessage, VideoStatus } from '../CoveyTypes';
 import Player from './Player';
-import { VideoStatus } from '../CoveyTypes';
 
 /**
  * A listener for player-related events in each town
