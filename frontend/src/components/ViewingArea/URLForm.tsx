@@ -60,7 +60,7 @@ export default function URLForm(props: URLFormProps): JSX.Element {
           elapsed: 0,
           isPaused: false,
         };
-        await apiClient.createVideoStatus({
+        await apiClient.updateVideoStatus({
           sessionToken,
           coveyTownID: currentTownID,
           videoStatus: videoStatusToCreate,

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
+import { io } from 'socket.io-client';
 import { VideoStatus, YOUTUBE_URL_PATTERN } from '../../Utils';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
@@ -807,10 +808,17 @@ export default function WorldMap(): JSX.Element {
         newGameScene.resume();
       };
     }
+    const url = process.env.REACT_APP_TOWNS_SERVICE_URL;
+    if (url) {
+      const socket = io(url, { auth: { token: sessionToken, coveyTownID: video?.coveyTownID } });
+      socket.on('videoStatusUpdated', (newVideoStatus: VideoStatus) => {
+        setVideoStatus(newVideoStatus);
+      })
+    }
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement, setNewConversation, myPlayerID]);
+  }, [video, emitMovement, sessionToken, setNewConversation, setNewViewingArea, myPlayerID]);
 
   useEffect(() => {
     const movementDispatcher = (player: ServerPlayer) => {
@@ -858,6 +866,7 @@ export default function WorldMap(): JSX.Element {
 
   const newViewingAreaModal = useMemo(() => {
     if (isViewingAreaModalOpen) {
+      video?.pauseGame();
       return (
         <ViewingAreaModal
           isOpen={isViewingAreaModalOpen !== undefined}
@@ -865,13 +874,14 @@ export default function WorldMap(): JSX.Element {
           videoPlayer={videoPlayer}
           videoLinkRegEx={YOUTUBE_URL_PATTERN}
           closeModal={() => {
+            video?.unPauseGame();
             setNewViewingArea(undefined);
           }}
           setVideoStatus={async (newStatus) => {
             setVideoStatus(newStatus);
             if (newStatus) {
               // alert backend of the change in video status
-              await apiClient.createVideoStatus({
+              await apiClient.updateVideoStatus({
                 sessionToken,
                 coveyTownID: currentTownID,
                 videoStatus: newStatus,
@@ -889,6 +899,7 @@ export default function WorldMap(): JSX.Element {
     videoStatus,
     isViewingAreaModalOpen,
     setNewViewingArea,
+    video,
   ]);
 
   return (

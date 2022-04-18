@@ -87,12 +87,27 @@ export interface ConversationCreateRequest {
 }
 
 /**
- * Payload sent by the client to update a VideoStatus
+ * Payload sent by the client to update a video status
  */
-export interface VideoStatusCreateRequest {
+ export interface VideoStatusUpdateRequest {
   coveyTownID: string;
   sessionToken: string;
   videoStatus: VideoStatus;
+}
+
+/**
+ * Payload sent by the client to get the video status
+ */
+ export interface VideoStatusGetRequest {
+  coveyTownID: string;
+  sessionToken: string;
+}
+
+/**
+ * Response from the server for a video status request
+ */
+export interface VideoStatusResponse {
+  videoStatus: VideoStatus | undefined;
 }
 
 /**
@@ -166,8 +181,13 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async createVideoStatus(requestData: VideoStatusCreateRequest) : Promise<void>{
+  async updateVideoStatus(requestData: VideoStatusUpdateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/videoStatus`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async getVideoStatus(requestData: VideoStatusGetRequest) : Promise<VideoStatusResponse>{
+    const responseWrapper = await this._axios.get<ResponseEnvelope<VideoStatusResponse>>(`/towns/${requestData.coveyTownID}/videoStatus`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

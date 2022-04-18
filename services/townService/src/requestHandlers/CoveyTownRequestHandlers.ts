@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
+import { ChatMessage, CoveyTownList, UserLocation, VideoStatus } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import { ConversationAreaCreateRequest, ServerConversationArea, VideoStatusUpdateRequest } from '../client/TownsServiceClient';
@@ -246,6 +246,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
     onConversationAreaDestroyed(conversation: ServerConversationArea){
       socket.emit('conversationDestroyed', conversation);
+    },
+    onVideoStatusUpdated(videoStatus: VideoStatus){
+      socket.emit('videoStatusUpdated', videoStatus);
     },
     onConversationAreaUpdated(conversation: ServerConversationArea){
       socket.emit('conversationUpdated', conversation);

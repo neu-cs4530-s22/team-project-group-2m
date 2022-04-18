@@ -117,6 +117,21 @@ export interface VideoStatusUpdateRequest {
 }
 
 /**
+ * Payload sent by the client to get the video status
+ */
+export interface VideoStatusGetRequest {
+  coveyTownID: string;
+  sessionToken: string;
+}
+
+/**
+ * Response from the server for a video status request
+ */
+export interface VideoStatusResponse {
+  videoStatus: VideoStatus | undefined;
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
@@ -187,8 +202,13 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async updateViewingArea(requestData: ViewingAreaUpdateRequest) : Promise<void>{
-    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/viewingArea`, requestData);
+  async updateVideoStatus(requestData: VideoStatusUpdateRequest) : Promise<void>{
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/videoStatus`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async getVideoStatus(requestData: VideoStatusGetRequest) : Promise<VideoStatusResponse>{
+    const responseWrapper = await this._axios.get<ResponseEnvelope<VideoStatusResponse>>(`/towns/${requestData.coveyTownID}/videoStatus`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
