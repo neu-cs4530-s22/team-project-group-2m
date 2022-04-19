@@ -61,6 +61,8 @@ export default function ViewingAreaModal({
                 }
               }
             }}
+            onPause={() => setVideoStatus({ ...videoStatus, isPaused: true })}
+            onPlay={() => setVideoStatus({ ...videoStatus, isPaused: false })}
             width='100%'
             height='100%'
           />
@@ -98,6 +100,7 @@ export default function ViewingAreaModal({
               }
             }}
           />
+          <div style={{ width: 10 }}/>
           {videoStatus && (
             <ProgressBar
               secondsElapsed={videoStatus.elapsed}
