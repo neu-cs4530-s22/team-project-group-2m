@@ -62,7 +62,7 @@ describe('Create Conversation Area API', () => {
       userName: nanoid(),
       coveyTownID: testingTown.coveyTownID,
     });
-    apiClient.createConversationArea({
+    await apiClient.createConversationArea({
       conversationArea: createConversationForTesting(),
       coveyTownID: testingTown.coveyTownID,
       sessionToken: testingSession.coveySessionToken,

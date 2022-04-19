@@ -57,13 +57,13 @@ describe('Video Status API', () => {
   afterAll(async () => {
     await server.close();
   });
-  it('Executes without error when creating a new video status', async () => {
+  it('Executes without error when creating a new video status and retrieving that video status', async () => {
     const testingTown = await createTownForTesting(undefined, true);
     const testingSession = await apiClient.joinTown({
       userName: nanoid(),
       coveyTownID: testingTown.coveyTownID,
     });
-    apiClient.updateVideoStatus({
+    await apiClient.updateVideoStatus({
       videoStatus: createVideoStatusForTesting({
         url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         length: 232,
@@ -89,7 +89,7 @@ describe('videoStatusUpdateHandler', () => {
     mockReset(mockCoveyTownStore);
     mockCoveyTownStore.getControllerForTown.mockReturnValue(mockCoveyTownController);
   });
-  it('Checks for a valid session token before creating a video status', ()=>{
+  it('Checks for a valid session token before updating a video status', ()=>{
     const coveyTownID = nanoid();
     const videoStatus: VideoStatus = createVideoStatusForTesting();
     const invalidSessionToken = nanoid();
