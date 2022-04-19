@@ -8,8 +8,9 @@ import CoveyTownController from '../lib/CoveyTownController';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import addTownRoutes from '../router/towns';
 import * as requestHandlers from '../requestHandlers/CoveyTownRequestHandlers';
-import { createConversationForTesting } from './TestUtils';
-import TownsServiceClient, { ServerConversationArea } from './TownsServiceClient';
+import { createVideoStatusForTesting } from './TestUtils';
+import TownsServiceClient from './TownsServiceClient';
+import { VideoStatus } from '../CoveyTypes';
 
 type TestTownData = {
   friendlyName: string;
@@ -18,7 +19,7 @@ type TestTownData = {
   townUpdatePassword: string;
 };
 
-describe('Create Conversation Area API', () => {
+describe('Video Status API', () => {
   let server: http.Server;
   let apiClient: TownsServiceClient;
 
@@ -56,20 +57,25 @@ describe('Create Conversation Area API', () => {
   afterAll(async () => {
     await server.close();
   });
-  it('Executes without error when creating a new conversation', async () => {
+  it('Executes without error when creating a new video status', async () => {
     const testingTown = await createTownForTesting(undefined, true);
     const testingSession = await apiClient.joinTown({
       userName: nanoid(),
       coveyTownID: testingTown.coveyTownID,
     });
-    apiClient.createConversationArea({
-      conversationArea: createConversationForTesting(),
+    apiClient.updateVideoStatus({
+      videoStatus: createVideoStatusForTesting({
+        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        length: 232,
+        elapsed: 0,
+        isPaused: false,
+      }),
       coveyTownID: testingTown.coveyTownID,
       sessionToken: testingSession.coveySessionToken,
     });
   });
 });
-describe('conversationAreaCreateHandler', () => {
+describe('videoStatusUpdateHandler', () => {
 
   const mockCoveyTownStore = mock<CoveyTownsStore>();
   const mockCoveyTownController = mock<CoveyTownController>();
@@ -83,20 +89,20 @@ describe('conversationAreaCreateHandler', () => {
     mockReset(mockCoveyTownStore);
     mockCoveyTownStore.getControllerForTown.mockReturnValue(mockCoveyTownController);
   });
-  it('Checks for a valid session token before creating a conversation area', ()=>{
+  it('Checks for a valid session token before creating a video status', ()=>{
     const coveyTownID = nanoid();
-    const conversationArea :ServerConversationArea = { boundingBox: { height: 1, width: 1, x:1, y:1 }, label: nanoid(), occupantsByID: [], topic: nanoid() };
+    const videoStatus: VideoStatus = createVideoStatusForTesting();
     const invalidSessionToken = nanoid();
 
     // Make sure to return 'undefined' regardless of what session token is passed
     mockCoveyTownController.getSessionByToken.mockReturnValueOnce(undefined);
 
-    requestHandlers.conversationAreaCreateHandler({
-      conversationArea,
+    requestHandlers.videoStatusUpdateHandler({
+      videoStatus,
       coveyTownID,
       sessionToken: invalidSessionToken,
     });
     expect(mockCoveyTownController.getSessionByToken).toBeCalledWith(invalidSessionToken);
-    expect(mockCoveyTownController.addConversationArea).not.toHaveBeenCalled();
+    expect(mockCoveyTownController.updateVideoStatus).not.toHaveBeenCalled();
   });
 });
