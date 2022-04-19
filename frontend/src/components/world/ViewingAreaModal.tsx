@@ -98,6 +98,7 @@ export default function ViewingAreaModal({
               }
             }}
           />
+          <div style={{ width: 10 }}/>
           {videoStatus && (
             <ProgressBar
               secondsElapsed={videoStatus.elapsed}
