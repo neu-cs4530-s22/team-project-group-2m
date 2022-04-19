@@ -86,12 +86,27 @@ export default class CoveyTownController {
 
   private _videoStatus: VideoStatus | undefined;
 
+  private _videoStatusUpdating: boolean;
+
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
+    this._videoStatusUpdating = false;
+    // automatically update the elapsed time of a video status each second while
+    // a video status is defined and it is not paused.
+    setInterval(() => {
+      if (!this._videoStatusUpdating && this._videoStatus && !this._videoStatus.isPaused) {
+        if (this._videoStatus.elapsed + 1 <= this._videoStatus.length) {
+          this.updateVideoStatus({
+            ...this._videoStatus,
+            elapsed: this._videoStatus.elapsed + 1,
+          });
+        }
+      }
+    }, 1000);
   }
 
   /**
@@ -222,6 +237,7 @@ export default class CoveyTownController {
    * @returns true if updated successfully
    */
   updateVideoStatus(newVideoStatus: VideoStatus): boolean {
+    this._videoStatusUpdating = true;
     // HARD CODED RegExp Pattern: A YouTube video is the only video that is currently supported
     if (!validURL(newVideoStatus.url, YOUTUBE_URL_PATTERN) &&
        !CoveyTownController.validElapsed(newVideoStatus.elapsed, newVideoStatus.length)) {
@@ -229,6 +245,7 @@ export default class CoveyTownController {
     }
     this._videoStatus = newVideoStatus;
     this._listeners.forEach(listener => listener.onVideoStatusUpdated(newVideoStatus));
+    this._videoStatusUpdating = false;
     return true;
   }
 
