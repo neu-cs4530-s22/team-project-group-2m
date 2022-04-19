@@ -1,3 +1,5 @@
+Viewing Area Manual Testing Script
+
 1. Join a Covey.Town.
 2. Navigate the sprite towards the left across the map.
     - One of the tables is labeled “Viewing Area”.
