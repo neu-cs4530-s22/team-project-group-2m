@@ -32,7 +32,7 @@ export default function PlayPauseButton(
   if (visible) {
     return (
       <Button onClick={onClick}>
-          {isPlaying ? 'Pause' : 'Play'}!
+          {isPlaying ? '⏸️' : '▶️'}
       </Button>
     );
   }
