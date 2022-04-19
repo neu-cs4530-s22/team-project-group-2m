@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
+import ReactPlayer from 'react-player';
+import { useToast } from '@chakra-ui/react';
 import { VideoStatus, YOUTUBE_URL_PATTERN } from '../../Utils';
 import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
@@ -13,7 +15,6 @@ import usePlayerMovement from '../../hooks/usePlayerMovement';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
-import YouTubeVideoPlayer from '../ViewingArea/YouTubeVideoPlayer';
 import NewConversationModal from './NewCoversationModal';
 import ViewingAreaModal from './ViewingAreaModal'
 
@@ -758,8 +759,6 @@ class CoveyGameScene extends Phaser.Scene {
   }
 }
 
-const videoPlayer = new YouTubeVideoPlayer();
-
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
@@ -776,6 +775,8 @@ export default function WorldMap(): JSX.Element {
   const [videoStatus, setVideoStatus] = useState<VideoStatus | undefined>();
   const playerMovementCallbacks = usePlayerMovement();
   const players = usePlayersInTown();
+  const videoPlayerRef = React.useRef<ReactPlayer>(null);
+  const toast = useToast();
 
   useEffect(() => {
     const config = {
@@ -871,36 +872,36 @@ export default function WorldMap(): JSX.Element {
         <ViewingAreaModal
           isOpen={isViewingAreaModalOpen !== undefined}
           videoStatus={videoStatus}
-          videoPlayer={videoPlayer}
+          videoPlayerRef={videoPlayerRef}
           videoLinkRegEx={YOUTUBE_URL_PATTERN}
           closeModal={() => {
             video?.unPauseGame();
             setNewViewingArea(undefined);
           }}
           setVideoStatus={async (newStatus) => {
-            setVideoStatus(newStatus);
             if (newStatus) {
               // alert backend of the change in video status
-              await apiClient.updateVideoStatus({
-                sessionToken,
-                coveyTownID: currentTownID,
-                videoStatus: newStatus,
-              });
+              try {
+                await apiClient.updateVideoStatus({
+                  sessionToken,
+                  coveyTownID: currentTownID,
+                  videoStatus: newStatus,
+                });
+                setVideoStatus(newStatus);
+              } catch (e) {
+                toast({
+                  title: 'Unable to update video',
+                  description: `Error: ${e}`,
+                  status: 'error',
+                });
+              }
             }
           }}
         />
       );
     }
     return <></>;
-  }, [
-    apiClient,
-    currentTownID,
-    sessionToken,
-    videoStatus,
-    isViewingAreaModalOpen,
-    setNewViewingArea,
-    video,
-  ]);
+  }, [isViewingAreaModalOpen, video, videoStatus, apiClient, sessionToken, currentTownID, toast]);
 
   return (
     <div id='app-container'>

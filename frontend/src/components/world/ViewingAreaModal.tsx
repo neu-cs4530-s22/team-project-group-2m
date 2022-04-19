@@ -6,8 +6,8 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
+import ReactPlayer from 'react-player';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
-import VideoPlayer from '../ViewingArea/VideoPlayer';
 import URLForm from '../ViewingArea/URLForm';
 import ProgressBar from '../ViewingArea/ProgressBar';
 import PlayPauseButton from '../ViewingArea/PlayPauseButton';
@@ -20,7 +20,7 @@ import { VideoStatus, fetchYoutubeVideoDuration } from '../../Utils';
 type ViewingAreaModalProps = {
   isOpen: boolean;
   videoStatus: VideoStatus | undefined;
-  videoPlayer: VideoPlayer;
+  videoPlayerRef: React.RefObject<ReactPlayer>;
   videoLinkRegEx: RegExp;
   closeModal: () => void;
   setVideoStatus: (videoStatus: VideoStatus | undefined) => void;
@@ -32,11 +32,43 @@ type ViewingAreaModalProps = {
  * @param props the props for a viewing area modal.
  * @returns a viewing area modal.
  */
-export default function ViewingAreaModal(
-  { isOpen, videoStatus, videoPlayer, videoLinkRegEx, closeModal, setVideoStatus } : ViewingAreaModalProps,
-): JSX.Element {
+export default function ViewingAreaModal({
+  isOpen,
+  videoStatus,
+  videoPlayerRef,
+  videoLinkRegEx,
+  closeModal,
+  setVideoStatus,
+} : ViewingAreaModalProps): JSX.Element {
 
   const video = useMaybeVideo();
+
+  function videoComponent() {
+    if (videoStatus) {
+      return (
+        <div className='player-wrapper'>
+          <ReactPlayer
+            className='react-player'
+            url={videoStatus.url}
+            playing={!videoStatus.isPaused}
+            ref={videoPlayerRef}
+            onProgress={({ playedSeconds }) => {
+              if (videoPlayerRef.current && videoStatus) {
+                const atEnd = playedSeconds + 6 >= videoStatus.length;
+                // only update if 5 seconds out of sync
+                if (!atEnd && Math.abs(videoStatus.elapsed - playedSeconds) > 5) {
+                  videoPlayerRef.current.seekTo(videoStatus.elapsed);
+                }
+              }
+            }}
+            width='100%'
+            height='100%'
+          />
+        </div>
+      );
+    }
+    return <></>;
+  }
 
   return (
     <Modal
@@ -55,7 +87,7 @@ export default function ViewingAreaModal(
           onVideoStatusCreated={newVideoStatus => setVideoStatus(newVideoStatus)}
           fetchVideoDuration={fetchYoutubeVideoDuration}
         />
-        {videoPlayer.videoComponent(videoStatus)}
+        {videoComponent()}
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           <PlayPauseButton
             isPlaying={!videoStatus?.isPaused ?? false}
