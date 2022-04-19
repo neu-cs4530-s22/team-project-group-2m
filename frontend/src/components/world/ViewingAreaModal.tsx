@@ -90,6 +90,7 @@ export default function ViewingAreaModal({
         {videoComponent()}
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           <PlayPauseButton
+            visible={!!videoStatus}
             isPlaying={!videoStatus?.isPaused ?? false}
             onClick={() => {
               if (videoStatus) {

@@ -7,6 +7,10 @@ import { Button } from '@chakra-ui/react';
  */
 type PlayPauseButtonProps = {
   /**
+   * If the button is visible on the screen.
+   */
+  visible: boolean;
+  /**
    * Sets the state of the video
    */
   isPlaying: boolean;
@@ -22,12 +26,15 @@ type PlayPauseButtonProps = {
  * @returns returns a PlayPauseButton component.
  */
 export default function PlayPauseButton(
-  { isPlaying, onClick }: PlayPauseButtonProps,
+  { isPlaying, onClick, visible }: PlayPauseButtonProps,
 ): JSX.Element {
 
-  return (
-    <Button onClick={onClick}>
-        {isPlaying ? 'Pause' : 'Play'}!
-    </Button>
-  );
+  if (visible) {
+    return (
+      <Button onClick={onClick}>
+          {isPlaying ? 'Pause' : 'Play'}!
+      </Button>
+    );
+  }
+  return <></>;
 }
