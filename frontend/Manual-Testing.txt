@@ -1,0 +1,32 @@
+1. Join a Covey.Town.
+2. Navigate the sprite towards the left across the map.
+    - One of the tables is labeled “Viewing Area”.
+3. Navigate the sprite inside the Viewing Area.
+    - A message that says “Press spacebar to enter the movie!” pops up.
+4. Press space bar while sprite is inside the Viewing Area.
+    - A modal pops up when the user presses enter.
+    - Modal displays a text input bar and a submit button.
+5. Enter a Youtube URL.
+    - An embedded Youtube video appears in the middle of the modal.
+    - A pause/play button shows on the bottom left of the video.
+    - A progress bar shows below the video.
+6. Enter an invalid Youtube URL.
+    - An error message pops up in a toast: “You entered an unsupported video link, please try again”.
+7. Click the pause/play button on the lower left.
+    - When unpaused the button displays “Pause!”.
+    - When unpaused the progress bar moves simultaneously with the timestamp of the video.
+    - When paused the button displays “Play!”.
+8. Click and drag the progress bar 
+    - The timestamp of the video updates and start playing the video from the new time.
+9. Click the close button on the top right.
+    - The modal closes and the user can move freely.
+10. The User reenters the viewing area.
+    - The user can reenter the viewing area after leaving and continue watching the video.
+    - The video should keep playing even after the user(s) left the viewing area.
+11. Another user joins Covey.Town and navigates into the Viewing Area while a video is playing.
+    - The user sees the same video and video progress as the other user in the viewing area.
+    - Both users can play/pause the video.
+    - Both users can change the video progress. 
+    - Both users can submit a new URL.
+    - Both users will see the video update based on these actions.
+    - This behavior extends to 3 or more users as well.
