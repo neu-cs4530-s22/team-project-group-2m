@@ -1,4 +1,10 @@
+# Viewing Area Usage
+
+TODO
+
 # Covey.Town
+
+Our *Viewing Area* feature does not require any additional or modified configuration compared to the original README.md. The contents of the original README.md for this project stay as is, and are shown below:
 
 Covey.Town provides a virtual meeting space where different groups of people can have simultaneous video calls, allowing participants to drift between different conversations, just like in real life.
 Covey.Town was built for Northeastern's [Spring 2021 software engineering course](https://neu-se.github.io/CS4530-CS5500-Spring-2021/), and is designed to be reused across semesters.
