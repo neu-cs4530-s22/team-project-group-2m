@@ -355,6 +355,19 @@ describe('CoveyTownController', () => {
       expect(added).toBe(false);
       expect(mockListener.onVideoStatusUpdated).toHaveBeenCalledTimes(0);
     });
+    it('should not initialize a video status with a non-video youtube url', () => {
+      const badVideoStatus: VideoStatus = {
+        url: 'https://www.youtube.com/',
+        length: 212,
+        elapsed: 0,
+        isPaused: false,
+      };
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+      const added = testingTown.updateVideoStatus(badVideoStatus);
+      expect(added).toBe(false);
+      expect(mockListener.onVideoStatusUpdated).toHaveBeenCalledTimes(0);
+    });
     it('should not initialize a video status with an invalid elapsed', () => {
       const badVideoStatus: VideoStatus = {
         url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
