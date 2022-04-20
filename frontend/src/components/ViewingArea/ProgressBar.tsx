@@ -43,6 +43,7 @@ export default function ProgressBar(
       value={sliderValue}
       colorScheme='red'
       maxWidth='650px'
+      focusThumbOnChange={false}
       onChange={(percentage) => {
         const seconds = (percentage * videoLengthSeconds) / 100;
         onTimeChange(seconds);
