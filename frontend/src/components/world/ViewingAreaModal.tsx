@@ -63,6 +63,12 @@ export default function ViewingAreaModal({
             }}
             onPause={() => setVideoStatus({ ...videoStatus, isPaused: true })}
             onPlay={() => setVideoStatus({ ...videoStatus, isPaused: false })}
+            // restart the video and pause when it ends
+            onEnded={() => setVideoStatus({
+              ...videoStatus,
+              isPaused: true,
+              elapsed: 0,
+            })}
             width='100%'
             height='100%'
           />
