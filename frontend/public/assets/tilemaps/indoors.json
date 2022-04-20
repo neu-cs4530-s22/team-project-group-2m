@@ -171,9 +171,9 @@
                 {
                  "height":125.333,
                  "id":23,
-                 "name":"Foyer Table 7",
+                 "name":"Viewing Area",
                  "rotation":0,
-                 "type":"conversation",
+                 "type":"viewing-area",
                  "visible":true,
                  "width":192.667,
                  "x":1598.99983333333,
@@ -204,9 +204,9 @@
                 {
                  "height":125.333,
                  "id":26,
-                 "name":"Viewing Area",
+                 "name":"Foyer Table 2",
                  "rotation":0,
-                 "type":"viewing-area",
+                 "type":"conversation",
                  "visible":true,
                  "width":192.667,
                  "x":381.6665,
