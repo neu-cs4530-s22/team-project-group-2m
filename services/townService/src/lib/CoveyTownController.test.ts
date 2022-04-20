@@ -5,7 +5,7 @@ import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
 import CoveyTownController from './CoveyTownController';
 import CoveyTownListener from '../types/CoveyTownListener';
-import { UserLocation } from '../CoveyTypes';
+import { UserLocation, VideoStatus } from '../CoveyTypes';
 import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
@@ -321,6 +321,114 @@ describe('CoveyTownController', () => {
       const newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: newConversationArea.label };
       testingTown.updatePlayerLocation(player, newLocation);
       expect(mockListener.onConversationAreaUpdated).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('updateVideoStatus', () => {
+    let testingTown: CoveyTownController;
+    const properlyFormedVideoStatus: VideoStatus = {
+      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      length: 212,
+      elapsed: 0,
+      isPaused: false,
+    };
+    beforeEach(async () => {
+      const townName = `updateVideoStatus test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should initialize a properly formed video status', () => {
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+      const added = testingTown.updateVideoStatus(properlyFormedVideoStatus);
+      expect(added).toBe(true);
+      expect(mockListener.onVideoStatusUpdated).toHaveBeenCalledTimes(1);
+    });
+    it('should not initialize a video status with an empty url', () => {
+      const badVideoStatus: VideoStatus = {
+        url: '',
+        length: 212,
+        elapsed: 0,
+        isPaused: false,
+      };
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+      const added = testingTown.updateVideoStatus(badVideoStatus);
+      expect(added).toBe(false);
+      expect(mockListener.onVideoStatusUpdated).toHaveBeenCalledTimes(0);
+    });
+    it('should not initialize a video status with an invalid elapsed', () => {
+      const badVideoStatus: VideoStatus = {
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        length: 212,
+        elapsed: 300,
+        isPaused: false,
+      };
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+      const added = testingTown.updateVideoStatus(badVideoStatus);
+      expect(added).toBe(false);
+      expect(mockListener.onVideoStatusUpdated).toHaveBeenCalledTimes(0);
+    });
+    it('should not initialize a video status with an empty url and invalid elapsed', () => {
+      const badVideoStatus: VideoStatus = {
+        url: '',
+        length: 212,
+        elapsed: 300,
+        isPaused: false,
+      };
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+      const added = testingTown.updateVideoStatus(badVideoStatus);
+      expect(added).toBe(false);
+      expect(mockListener.onVideoStatusUpdated).toHaveBeenCalledTimes(0);
+    });
+    it('should not initialize a video status with a negative elapsed', () => {
+      const badVideoStatus: VideoStatus = {
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        length: 212,
+        elapsed: -1,
+        isPaused: false,
+      };
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+      const added = testingTown.updateVideoStatus(badVideoStatus);
+      expect(added).toBe(false);
+      expect(mockListener.onVideoStatusUpdated).toHaveBeenCalledTimes(0);
+    });
+    it('should initialize a video status when elapsed is equal to length', () => {
+      const goodVideoStatus: VideoStatus = {
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        length: 212,
+        elapsed: 212,
+        isPaused: false,
+      };
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+      const added = testingTown.updateVideoStatus(goodVideoStatus);
+      expect(added).toBe(true);
+      expect(mockListener.onVideoStatusUpdated).toHaveBeenCalledTimes(1);
+    });
+    it('should automatically update the elapsed once video status initialized', async () => {
+      testingTown.updateVideoStatus(properlyFormedVideoStatus);
+      expect(testingTown.videoStatus).toBeDefined();
+      expect(testingTown.videoStatus?.elapsed).toBe(0);
+      // wait 3 seconds and make sure the elapsed has updated
+      await new Promise((val) => setTimeout(val, 3000));
+      expect(testingTown.videoStatus?.elapsed).not.toBe(0);
+    });
+    it('should stop updating the elapsed once it hits length', async () => {
+      const fiveSecondVideo: VideoStatus = {
+        url: 'https://www.youtube.com/watch?v=IGQBtbKSVhY',
+        length: 1,
+        elapsed: 0,
+        isPaused: false,
+      };
+      const added = testingTown.updateVideoStatus(fiveSecondVideo);
+      expect(added).toBe(true);
+      expect(testingTown.videoStatus).toBeDefined();
+      expect(testingTown.videoStatus?.elapsed).toBe(0);
+      // wait 3 seconds and ensure the elapsed is the same as length
+      await new Promise((val) => setTimeout(val, 3000));
+      expect(testingTown.videoStatus?.elapsed).toBe(1);
     });
   });
 });
