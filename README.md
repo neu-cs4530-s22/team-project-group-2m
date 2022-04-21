@@ -6,16 +6,20 @@ Our Viewing Area is a place where many users can view a movie (YouTube video) an
 - All users can control the movie when its playing.
 
 1. Viewing Area
-![Viewing Area](https://drive.google.com/file/d/1NuThCjdIZvip-ZPCt_UJBWKQbq5DNru4/view?usp=sharing)
+
+![Viewing Area](docs/viewing_area_in_world.png)
 
 2. Empty URL
-![Empty URL](https://drive.google.com/file/d/1Lbzlr_duKJxMQVPSV0gf86gtfERcZjV0/view?usp=sharing)
+
+![Empty URL](docs/empty_video.png)
 
 3. Video Playing
-![Video Playing](https://drive.google.com/file/d/1jGudjZ2NmJ9eRWLzMTIuH_RIVo0NbUcG/view?usp=sharing)
+
+![Video Playing](docs/player_1.png)
 
 3. Video Paused
-![Video Paused](https://drive.google.com/file/d/1ngriFy0PlXQ0gY0p1VRfkETfOF8P8zeb/view?usp=sharing)
+
+![Video Paused](docs/player_paused.png)
 
 # Covey.Town
 
