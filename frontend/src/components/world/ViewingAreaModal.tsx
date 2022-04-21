@@ -55,8 +55,8 @@ export default function ViewingAreaModal({
             onProgress={({ playedSeconds }) => {
               if (videoPlayerRef.current && videoStatus) {
                 const atEnd = playedSeconds + 6 >= videoStatus.length;
-                // only update if 5 seconds out of sync
-                if (!atEnd && Math.abs(videoStatus.elapsed - playedSeconds) > 5) {
+                // only update if 3 seconds out of sync
+                if (!atEnd && Math.abs(videoStatus.elapsed - playedSeconds) > 3) {
                   videoPlayerRef.current.seekTo(videoStatus.elapsed);
                 }
               }
