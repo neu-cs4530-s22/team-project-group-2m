@@ -8,6 +8,7 @@ Our Viewing Area is a place where many users can view a movie (YouTube video) an
 1. Viewing Area
 
 ![Viewing Area](docs/viewing_area_in_world.png)
+<img src="docs/viewing_area_in_world.png" width="250" height="250"/>
 
 2. Empty URL
 
