@@ -199,12 +199,12 @@ export function conversationAreaCreateHandler(_requestData: ConversationAreaCrea
 }
 
 /**
- * A handler to process the "Create Viewing Area" request
+ * A handler to process the "Update Video Status" request
  * The intended flow of this handler is:
  * * Fetch the town controller for the specified town ID
  * * Validate that the sessionToken is valid for that town
- * * Ask the TownController to create the viewing area
- * @param _requestData Viewing area create request
+ * * Ask the TownController to update the video status
+ * @param _requestData Video status update request
  */
 export function videoStatusUpdateHandler(_requestData: VideoStatusUpdateRequest) : ResponseEnvelope<Record<string, null>> {
   const townsStore = CoveyTownsStore.getInstance();
