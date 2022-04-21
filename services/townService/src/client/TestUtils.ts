@@ -5,7 +5,7 @@ import { Socket as ServerSocket } from 'socket.io';
 import { AddressInfo } from 'net';
 import http from 'http';
 import { nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import { UserLocation, VideoStatus } from '../CoveyTypes';
 import { BoundingBox, ServerConversationArea } from './TownsServiceClient';
 
 export type RemoteServerPlayer = {
@@ -103,5 +103,25 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
     label: params?.conversationLabel || nanoid(),
     occupantsByID: [],
     topic: params?.conversationTopic || nanoid(),
+  };
+}
+
+/**
+ * Creates a video status object for testing
+ * @param params - Video status type json
+ * @returns a VideoStatus
+ */
+export function createVideoStatusForTesting(params?:{
+  url?: string,
+  length?: number,
+  elapsed?: number
+  isPaused?: boolean,
+}): VideoStatus {
+
+  return {
+    url: params?.url || '',
+    length: params?.length || 0,
+    elapsed: params?.elapsed || 0,
+    isPaused: params?.isPaused || false,
   };
 }

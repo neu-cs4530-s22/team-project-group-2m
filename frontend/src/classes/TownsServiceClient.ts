@@ -186,9 +186,4 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async getVideoStatus(requestData: VideoStatusGetRequest) : Promise<VideoStatusResponse>{
-    const responseWrapper = await this._axios.get<ResponseEnvelope<VideoStatusResponse>>(`/towns/${requestData.coveyTownID}/videoStatus`);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
-  }
-
 }
