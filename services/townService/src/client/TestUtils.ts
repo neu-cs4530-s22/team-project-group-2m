@@ -106,6 +106,11 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
   };
 }
 
+/**
+ * Creates a video status object for testing
+ * @param params - Video status type json
+ * @returns a VideoStatus
+ */
 export function createVideoStatusForTesting(params?:{
   url?: string,
   length?: number,
