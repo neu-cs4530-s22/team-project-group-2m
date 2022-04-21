@@ -199,7 +199,7 @@ export function conversationAreaCreateHandler(_requestData: ConversationAreaCrea
 }
 
 /**
- * A handler to process the "Create Viewing Area" request
+ * A handler to process the "Update Video Status" request
  * The intended flow of this handler is:
  * * Fetch the town controller for the specified town ID
  * * Validate that the sessionToken is valid for that town
