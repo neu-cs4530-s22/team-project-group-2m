@@ -1,18 +1,17 @@
 Viewing Area Manual Testing Script
 
 1. Join a Covey.Town.
-2. Navigate the sprite towards the left across the map.
-    - One of the tables is labeled “Viewing Area”.
-3. Navigate the sprite inside the Viewing Area.
+2. Navigate to the conference room in the upper area of the map.
+    - In the top left corner of the room there is a label “Viewing Area”.
     - A message that says “Press spacebar to enter the movie!” pops up.
-4. Press space bar while sprite is inside the Viewing Area.
+3. Press space bar while sprite is inside the Viewing Area.
     - A modal pops up when the user presses enter.
     - Modal displays a text input bar and a submit button.
-5. Enter a Youtube URL.
+5. Enter a Youtube video URL.
     - An embedded Youtube video appears in the middle of the modal.
     - A pause/play button shows on the bottom left of the video.
     - A progress bar shows below the video.
-6. Enter an invalid Youtube URL.
+6. Enter an invalid Youtube video URL (e.g. https://www.youtube.com).
     - An error message pops up in a toast: “You entered an unsupported video link, please try again”.
 7. Click the pause/play button on the lower left.
     - When unpaused the button displays “Pause!”.
