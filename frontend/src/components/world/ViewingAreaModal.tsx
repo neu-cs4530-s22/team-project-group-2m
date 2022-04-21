@@ -69,6 +69,14 @@ export default function ViewingAreaModal({
               isPaused: true,
               elapsed: 0,
             })}
+            config={{
+              youtube: {
+                playerVars: {
+                  // disable skipping time via keyboard
+                  disablekb: 1,
+                },
+              },
+            }}
             width='100%'
             height='100%'
           />
