@@ -1,4 +1,4 @@
-import { validURL, YOUTUBE_URL_PATTERN } from "./Utils";
+import { validURL, YOUTUBE_URL_PATTERN } from './Utils';
 
 describe('validURL', () => {
   const VALID_STANDARD_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
@@ -6,7 +6,7 @@ describe('validURL', () => {
   const VALID_EMBED_URL = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
   const VALID_YT_INTERRUPT_URL = 'https://youtu.be/dQw4w9WgXcQ&feature=channel';
   const VALID_NO_COOKIE_URL = 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ';
-  const VALID_LONG_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLGup6kBfcU7Le5laEaCLgTKtlDcxMqGxZ&index=108'
+  const VALID_LONG_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLGup6kBfcU7Le5laEaCLgTKtlDcxMqGxZ&index=108';
   const VALID_SHORT_URL = 'https://youtu.be/dQw4w9WgXcQ';
 
   it('should accept a standard youtube url with youtube regular expression', () => {

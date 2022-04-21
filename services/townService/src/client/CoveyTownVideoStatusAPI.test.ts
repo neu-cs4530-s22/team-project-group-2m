@@ -65,7 +65,7 @@ describe('Video Status API', () => {
     });
     await apiClient.updateVideoStatus({
       videoStatus: createVideoStatusForTesting({
-        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         length: 232,
         elapsed: 0,
         isPaused: false,
