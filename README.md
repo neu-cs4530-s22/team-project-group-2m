@@ -7,20 +7,19 @@ Our Viewing Area is a place where many users can view a movie (YouTube video) an
 
 1. Viewing Area
 
-![Viewing Area](docs/viewing_area_in_world.png)
-<img src="docs/viewing_area_in_world.png" width="250" height="250"/>
+<img src="docs/viewing_area_in_world.png" width="300" height="200"/>
 
 2. Empty URL
 
-![Empty URL](docs/empty_video.png)
+<img src="docs/empty_video.png" width="300" height="200"/>
 
 3. Video Playing
 
-![Video Playing](docs/player_1.png)
+<img src="docs/player_1.png" width="300" height="200"/>
 
 3. Video Paused
 
-![Video Paused](docs/player_paused.png)
+<img src="docs/player_paused.png" width="300" height="200"/>
 
 # Covey.Town
 
