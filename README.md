@@ -2,8 +2,20 @@
 
 Our Viewing Area is a place where many users can view a movie (YouTube video) and have a good time together. To use our viewing Area, the sprite must enter the Viewing Area perimeter located at the top of the world map. Once the user enters the perimeter, he/she must enter spacebar to open the modal. Once the modal opens, the user must enter a valid YouTube URL and the movie starts playing!
 
-- Many users can interact in the viewing area at the same time.·     
+- Many users can interact in the viewing area at the same time. 
 - All users can control the movie when its playing.
+
+1. Viewing Area
+![Viewing Area](https://drive.google.com/file/d/1NuThCjdIZvip-ZPCt_UJBWKQbq5DNru4/view?usp=sharing)
+
+2. Empty URL
+![Empty URL](https://drive.google.com/file/d/1Lbzlr_duKJxMQVPSV0gf86gtfERcZjV0/view?usp=sharing)
+
+3. Video Playing
+![Video Playing](https://drive.google.com/file/d/1jGudjZ2NmJ9eRWLzMTIuH_RIVo0NbUcG/view?usp=sharing)
+
+3. Video Paused
+![Video Paused](https://drive.google.com/file/d/1ngriFy0PlXQ0gY0p1VRfkETfOF8P8zeb/view?usp=sharing)
 
 # Covey.Town
 
