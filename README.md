@@ -1,6 +1,6 @@
 # Viewing Area Usage
 
-Our Viewing Area is a place where many users can view a movie (YouTube video) and have a good time together. To use our viewing area, the sprite must enter the Viewing Area located at the top of the world map. Once the user enters the Viewing Area, they must enter spacebar to open the modal. Once the modal opens, the user must enter a valid YouTube video url and the movie starts playing!
+Viewing Area is a place in Covey.Town where many users can view a movie (YouTube video) and have a good time together. To use our viewing area, the sprite must enter the Viewing Area located at the top of the world map. Once the user enters the Viewing Area, they must enter spacebar to open the modal. Once the modal opens, the user must enter a valid YouTube video url and the movie starts playing!
 
 - Many users can interact in the viewing area at the same time. 
 - All users can control the movie when its playing.
@@ -22,8 +22,6 @@ Our Viewing Area is a place where many users can view a movie (YouTube video) an
 <img src="docs/player_paused.png" width="300" height="200"/>
 
 # Covey.Town
-
-Our *Viewing Area* feature does not require any additional or modified configuration compared to the original README.md. The contents of the original README.md for this project stay as is, and are shown below:
 
 Covey.Town provides a virtual meeting space where different groups of people can have simultaneous video calls, allowing participants to drift between different conversations, just like in real life.
 Covey.Town was built for Northeastern's [Spring 2021 software engineering course](https://neu-se.github.io/CS4530-CS5500-Spring-2021/), and is designed to be reused across semesters.
