@@ -17,7 +17,7 @@ Viewing Area is a place in Covey.Town where many users can view a movie (YouTube
 
 <img src="docs/player_1.png" width="300" height="200"/>
 
-3. Video Paused
+4. Video Paused
 
 <img src="docs/player_paused.png" width="300" height="200"/>
 
