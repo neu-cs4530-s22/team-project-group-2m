@@ -771,7 +771,7 @@ export default function WorldMap(): JSX.Element {
   const conversationAreas = useConversationAreas();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
-  const [isViewingAreaModalOpen, setNewViewingArea] = useState<ViewingArea>();
+  const [isViewingAreaModalOpen, setIsViewingAreaModalOpen] = useState<ViewingArea>();
   const [videoStatus, setVideoStatus] = useState<VideoStatus | undefined>();
   const playerMovementCallbacks = usePlayerMovement();
   const players = usePlayersInTown();
@@ -799,7 +799,13 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, setNewViewingArea, myPlayerID);
+      const newGameScene = new CoveyGameScene(
+        video,
+        emitMovement,
+        setNewConversation,
+        setIsViewingAreaModalOpen,
+        myPlayerID,
+      );
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -819,7 +825,7 @@ export default function WorldMap(): JSX.Element {
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement, sessionToken, setNewConversation, setNewViewingArea, myPlayerID]);
+  }, [video, emitMovement, sessionToken, setNewConversation, setIsViewingAreaModalOpen, myPlayerID]);
 
   useEffect(() => {
     const movementDispatcher = (player: ServerPlayer) => {
@@ -876,7 +882,7 @@ export default function WorldMap(): JSX.Element {
           videoLinkRegEx={YOUTUBE_URL_PATTERN}
           closeModal={() => {
             video?.unPauseGame();
-            setNewViewingArea(undefined);
+            setIsViewingAreaModalOpen(undefined);
           }}
           setVideoStatus={async (newStatus) => {
             if (newStatus) {
